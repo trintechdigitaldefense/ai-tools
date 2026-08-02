@@ -1,4 +1,4 @@
-# TrinTech AI Tools
+# TrinTech Digital Defense AI Tools
 
 Custom-built AI security tools, autonomous scanners, and intelligence platforms by **TrinTech Digital Defense**.
 
