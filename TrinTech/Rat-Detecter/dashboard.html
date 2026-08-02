@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPECTER-THREAT v3.0 — TrinTech Digital Defense</title>
+<style>
+  :root {
+    --bg: #0a0a1a;
+    --card: #12122a;
+    --border: #1a1a3e;
+    --text: #e0e0f0;
+    --text-dim: #8888aa;
+    --accent: #00e5ff;
+    --accent2: #e94560;
+    --critical: #dc3545;
+    --high: #fd7e14;
+    --medium: #ffc107;
+    --low: #28a745;
+    --info: #17a2b8;
+    --clean: #17a2b8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #0a0a2a, #1a0a2a);
+    border-bottom: 2px solid var(--accent2);
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .header h1 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .header .subtitle {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+  .header-actions { display: flex; gap: 8px; }
+
+  /* Buttons */
+  .btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn:hover { opacity: 0.85; transform: translateY(-1px); }
+  .btn-primary { background: var(--accent); color: #000; }
+  .btn-danger { background: var(--accent2); color: #fff; }
+  .btn-sm { padding: 6px 12px; font-size: 0.75rem; }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* Container */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  /* Progress bar */
+  .progress-bar-container {
+    background: var(--card);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+  }
+  .progress-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 0.85rem;
+  }
+  .progress-track {
+    height: 8px;
+    background: var(--bg);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 4px;
+    transition: width 0.5s ease;
+  }
+  .module-name { color: var(--accent); font-weight: 600; }
+
+  /* Cards */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+  }
+  .card .value {
+    font-size: 2rem;
+    font-weight: 700;
+  }
+  .card .label {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .card-critical .value { color: var(--critical); }
+  .card-high .value { color: var(--high); }
+  .card-medium .value { color: var(--medium); }
+  .card-low .value { color: var(--low); }
+  .card-info .value { color: var(--info); }
+  .card-risk .value { color: var(--accent); }
+
+  /* Sections */
+  .section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .section-header {
+    padding: 14px 20px;
+    background: rgba(255,255,255,0.03);
+    border-bottom: 1px solid var(--border);
+    font-weight: 600;
+    font-size: 0.95rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .section-body { padding: 0; }
+
+  /* Target info */
+  .target-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 8px;
+    padding: 16px 20px;
+  }
+  .target-item {
+    display: flex;
+    gap: 8px;
+    font-size: 0.85rem;
+  }
+  .target-key { color: var(--text-dim); min-width: 80px; }
+  .target-val { color: var(--text); font-weight: 500; }
+
+  /* Findings list */
+  .finding-item {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .finding-item:last-child { border-bottom: none; }
+  .finding-sev {
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    white-space: nowrap;
+    min-width: 70px;
+    text-align: center;
+  }
+  .sev-critical { background: var(--critical); color: #fff; }
+  .sev-high { background: var(--high); color: #000; }
+  .sev-medium { background: var(--medium); color: #000; }
+  .sev-low { background: var(--low); color: #fff; }
+  .sev-info { background: var(--info); color: #fff; }
+  .finding-detail { flex: 1; line-height: 1.5; }
+  .finding-ts { color: var(--text-dim); font-size: 0.75rem; white-space: nowrap; }
+
+  /* AI analysis */
+  .ai-content {
+    padding: 16px 20px;
+    font-size: 0.9rem;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    color: var(--text);
+  }
+
+  /* Log */
+  .log-content {
+    padding: 16px 20px;
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  .log-line { margin: 2px 0; }
+  .log-INFO { color: var(--info); }
+  .log-HIGH { color: var(--high); }
+  .log-CRITICAL { color: var(--critical); font-weight: 600; }
+  .log-MEDIUM { color: var(--medium); }
+  .log-LOW { color: var(--low); }
+
+  /* Status badge */
+  .status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .status-running { background: rgba(0,229,255,0.2); color: var(--accent); }
+  .status-complete { background: rgba(40,167,69,0.2); color: var(--low); }
+  .status-idle { background: rgba(255,255,255,0.1); color: var(--text-dim); }
+
+  /* API key input */
+  .api-bar {
+    display: flex;
+    gap: 8px;
+    padding: 12px 20px;
+    background: rgba(255,255,255,0.03);
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .api-bar input, .api-bar select {
+    padding: 6px 12px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-size: 0.85rem;
+  }
+  .api-bar input { flex: 1; min-width: 200px; }
+  .api-bar input:focus, .api-bar select:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  /* Download buttons */
+  .download-bar {
+    display: flex;
+    gap: 8px;
+    padding: 12px 20px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* Kill modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    min-width: 320px;
+    max-width: 90vw;
+  }
+  .modal h3 { margin-bottom: 16px; }
+  .modal input {
+    width: 100%;
+    padding: 8px 12px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-size: 0.9rem;
+    margin-bottom: 12px;
+  }
+  .modal-actions { display: flex; gap: 8px; }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .header { padding: 16px; }
+    .header h1 { font-size: 1.1rem; }
+    .container { padding: 12px; }
+    .cards { grid-template-columns: repeat(3, 1fr); }
+    .card .value { font-size: 1.5rem; }
+    .target-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* Pulse animation for running state */
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  .pulse { animation: pulse 1.5s infinite; }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div>
+    <h1>🛡️ SPECTER-THREAT v3.0</h1>
+    <div class="subtitle">TrinTech Digital Defense — RAT & Payload Detection</div>
+  </div>
+  <div class="header-actions">
+    <span id="statusBadge" class="status-badge status-idle">IDLE</span>
+    <button class="btn btn-primary btn-sm" id="startBtn" onclick="startScan()">▶ Start Scan</button>
+    <button class="btn btn-danger btn-sm" onclick="showKillModal()">⚡ Kill PID</button>
+  </div>
+</div>
+
+<div class="container">
+  <!-- API Config -->
+  <div class="api-bar">
+    <input type="password" id="apiKey" placeholder="Anthropic API Key (optional)">
+    <select id="scanMode">
+      <option value="full">Full Scan</option>
+      <option value="quick">Quick Scan</option>
+      <option value="ports">Ports Only</option>
+      <option value="procs">Processes Only</option>
+    </select>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-bar-container">
+    <div class="progress-info">
+      <span class="module-name" id="moduleName">No scan running</span>
+      <span id="progressPct">0%</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+    </div>
+  </div>
+
+  <!-- Risk Score Cards -->
+  <div class="cards">
+    <div class="card card-risk">
+      <div class="value" id="riskScore">--</div>
+      <div class="label">Risk Score</div>
+    </div>
+    <div class="card" id="riskLabelCard">
+      <div class="value" id="riskLabel">--</div>
+      <div class="label">Risk Status</div>
+    </div>
+    <div class="card card-critical">
+      <div class="value" id="sevCritical">0</div>
+      <div class="label">CRITICAL</div>
+    </div>
+    <div class="card card-high">
+      <div class="value" id="sevHigh">0</div>
+      <div class="label">HIGH</div>
+    </div>
+    <div class="card card-medium">
+      <div class="value" id="sevMedium">0</div>
+      <div class="label">MEDIUM</div>
+    </div>
+    <div class="card card-low">
+      <div class="value" id="sevLow">0</div>
+      <div class="label">LOW</div>
+    </div>
+    <div class="card card-info">
+      <div class="value" id="sevInfo">0</div>
+      <div class="label">INFO</div>
+    </div>
+    <div class="card">
+      <div class="value" id="totalFindings">0</div>
+      <div class="label">Total Findings</div>
+    </div>
+  </div>
+
+  <!-- Target Info -->
+  <div class="section" id="targetSection" style="display:none;">
+    <div class="section-header">Target Information</div>
+    <div class="target-grid" id="targetGrid"></div>
+  </div>
+
+  <!-- Findings -->
+  <div class="section">
+    <div class="section-header">
+      <span>Findings</span>
+      <span id="findingsCount" style="color:var(--text-dim);font-size:0.8rem;"></span>
+    </div>
+    <div class="section-body" id="findingsList">
+      <div style="padding:30px;text-align:center;color:var(--text-dim);">
+        No findings yet — start a scan to detect threats.
+      </div>
+    </div>
+    <div class="download-bar">
+      <button class="btn btn-sm" style="background:var(--border);color:var(--text);" onclick="downloadPDF()">📄 PDF</button>
+      <button class="btn btn-sm" style="background:var(--border);color:var(--text);" onclick="downloadJSON()">📋 JSON</button>
+    </div>
+  </div>
+
+  <!-- AI Analysis -->
+  <div class="section" id="aiSection" style="display:none;">
+    <div class="section-header">
+      <span>🤖 AI Threat Analysis</span>
+      <span style="color:var(--text-dim);font-size:0.75rem;">Powered by Claude AI</span>
+    </div>
+    <div class="ai-content" id="aiContent"></div>
+  </div>
+
+  <!-- Log -->
+  <div class="section">
+    <div class="section-header">
+      <span>Scan Log</span>
+      <span style="color:var(--text-dim);font-size:0.75rem;" id="logCount">0 entries</span>
+    </div>
+    <div class="log-content" id="logContent">
+      <div style="color:var(--text-dim);">Waiting for scan...</div>
+    </div>
+  </div>
+</div>
+
+<!-- Kill Modal -->
+<div class="modal-overlay" id="killModal">
+  <div class="modal">
+    <h3>⚡ Kill Process</h3>
+    <input type="number" id="killPid" placeholder="Enter PID to kill">
+    <div class="modal-actions">
+      <button class="btn btn-danger" onclick="killPID()">Kill</button>
+      <button class="btn btn-sm" style="background:var(--border);color:var(--text);" onclick="hideKillModal()">Cancel</button>
+    </div>
+    <div id="killResult" style="margin-top:12px;font-size:0.85rem;"></div>
+  </div>
+</div>
+
+<script>
+const API = '';
+let pollInterval = null;
+let findings = [];
+let logs = [];
+let prevState = null;
+
+// Poll state every 2s
+function pollState() {
+  fetch(`${API}/api/state`)
+    .then(r => r.json())
+    .then(data => {
+      updateUI(data);
+      if (prevState && JSON.stringify(prevState) !== JSON.stringify(data)) {
+        prevState = data;
+      } else {
+        prevState = data;
+      }
+    })
+    .catch(() => {});
+}
+
+function updateUI(data) {
+  // Progress
+  document.getElementById('progressFill').style.width = data.progress + '%';
+  document.getElementById('progressPct').textContent = data.progress + '%';
+  document.getElementById('moduleName').textContent = data.current_module || 'No scan running';
+
+  // Status badge
+  const badge = document.getElementById('statusBadge');
+  if (data.running) {
+    badge.className = 'status-badge status-running pulse';
+    badge.textContent = 'RUNNING';
+    document.getElementById('startBtn').disabled = true;
+  } else {
+    if (data.progress === 100 || (data.finished && data.progress === 100)) {
+      badge.className = 'status-badge status-complete';
+      badge.textContent = 'COMPLETE';
+    } else {
+      badge.className = 'status-badge status-idle';
+      badge.textContent = 'IDLE';
+    }
+    document.getElementById('startBtn').disabled = false;
+  }
+
+  // Risk
+  document.getElementById('riskScore').textContent = data.risk_score ?? '--';
+  const rl = document.getElementById('riskLabel');
+  rl.textContent = data.risk_label || '--';
+
+  // Color risk label
+  const card = document.getElementById('riskLabelCard');
+  card.className = 'card';
+  if (data.risk_label) {
+    const c = data.risk_label.toLowerCase();
+    if (c.includes('comprom')) card.classList.add('card-critical');
+    else if (c.includes('high')) card.classList.add('card-high');
+    else if (c.includes('moderate')) card.classList.add('card-medium');
+    else if (c.includes('low')) card.classList.add('card-low');
+    else if (c.includes('clean')) card.classList.add('card-info');
+  }
+
+  // Severities
+  const s = data.severity_counts || {};
+  document.getElementById('sevCritical').textContent = s.CRITICAL || 0;
+  document.getElementById('sevHigh').textContent = s.HIGH || 0;
+  document.getElementById('sevMedium').textContent = s.MEDIUM || 0;
+  document.getElementById('sevLow').textContent = s.LOW || 0;
+  document.getElementById('sevInfo').textContent = s.INFO || 0;
+  document.getElementById('totalFindings').textContent = (data.findings || []).length;
+
+  // Target info
+  const ti = data.target_info;
+  if (ti && Object.keys(ti).length > 0) {
+    document.getElementById('targetSection').style.display = 'block';
+    const grid = document.getElementById('targetGrid');
+    grid.innerHTML = '';
+    for (const [k, v] of Object.entries(ti)) {
+      const d = document.createElement('div');
+      d.className = 'target-item';
+      d.innerHTML = `<span class="target-key">${k}:</span><span class="target-val">${v}</span>`;
+      grid.appendChild(d);
+    }
+  }
+
+  // Findings
+  if (data.findings && data.findings.length > 0) {
+    findings = data.findings;
+    document.getElementById('findingsCount').textContent = findings.length + ' findings';
+    const list = document.getElementById('findingsList');
+    // Only render new ones
+    const maxShow = 200;
+    list.innerHTML = '';
+    const toShow = findings.slice(-maxShow).reverse();
+    for (const f of toShow) {
+      const d = document.createElement('div');
+      d.className = 'finding-item';
+      const sevClass = 'sev-' + (f.severity || 'info').toLowerCase();
+      d.innerHTML = `
+        <span class="finding-sev ${sevClass}">${f.severity || 'INFO'}</span>
+        <span class="finding-detail"><b>${f.type || ''}</b>: ${f.detail || ''}</span>
+        <span class="finding-ts">${f.ts || ''}</span>
+      `;
+      list.appendChild(d);
+    }
+  }
+
+  // AI
+  if (data.ai_analysis && data.ai_analysis !== '') {
+    const sec = document.getElementById('aiSection');
+    sec.style.display = 'block';
+    document.getElementById('aiContent').textContent = data.ai_analysis;
+  }
+
+  // Log
+  if (data.log && data.log.length > 0) {
+    logs = data.log;
+    document.getElementById('logCount').textContent = logs.length + ' entries';
+    const logDiv = document.getElementById('logContent');
+    logDiv.innerHTML = '';
+    const toShow = logs.slice(-100).reverse();
+    for (const l of toShow) {
+      const d = document.createElement('div');
+      d.className = 'log-line log-' + (l.level || 'INFO');
+      d.textContent = `[${l.ts || ''}] ${l.msg || ''}`;
+      logDiv.appendChild(d);
+    }
+    logDiv.scrollTop = logDiv.scrollHeight;
+  }
+}
+
+// Start scan
+function startScan() {
+  const key = document.getElementById('apiKey').value;
+  const mode = document.getElementById('scanMode').value;
+  fetch(`${API}/api/start`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ api_key: key, mode: mode })
+  })
+  .then(r => r.json())
+  .then(data => {
+    console.log('Scan started:', data);
+    if (!pollInterval) {
+      pollInterval = setInterval(pollState, 2000);
+    }
+  })
+  .catch(e => console.error('Start failed:', e));
+}
+
+// Download PDF
+function downloadPDF() {
+  window.open(`${API}/api/report`, '_blank');
+}
+
+// Download JSON
+function downloadJSON() {
+  window.open(`${API}/api/report/json`, '_blank');
+}
+
+// Kill PID
+function showKillModal() {
+  document.getElementById('killModal').classList.add('active');
+}
+function hideKillModal() {
+  document.getElementById('killModal').classList.remove('active');
+  document.getElementById('killResult').textContent = '';
+}
+function killPID() {
+  const pid = parseInt(document.getElementById('killPid').value);
+  if (!pid) return;
+  fetch(`${API}/api/kill`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ pid })
+  })
+  .then(r => r.json())
+  .then(data => {
+    document.getElementById('killResult').innerHTML =
+      `<pre style="background:var(--bg);padding:10px;border-radius:4px;font-size:0.8rem;">${JSON.stringify(data, null, 2)}</pre>`;
+  });
+}
+
+// Initial poll
+if (!pollInterval) {
+  pollInterval = setInterval(pollState, 2000);
+}
+</script>
+</body>
+</html>

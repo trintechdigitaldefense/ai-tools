@@ -1,0 +1,53 @@
+# Virtual environments
+.venv/
+venv/
+env/
+.venv.*
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+*.whl
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test artifacts
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# Downloads
+downloads/
+tool-results/
+
+# Reports
+trintech_reports/
+
+# Uploads
+uploads/
+
+# Logs
+*.log
+
+# Memory
+memory/
+
+# Cron
+cron.json

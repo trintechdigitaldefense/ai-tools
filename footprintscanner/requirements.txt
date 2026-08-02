@@ -1,0 +1,14 @@
+pydantic>=2.5
+requests>=2.31
+rich>=13.7
+reportlab>=4.0
+tabulate>=0.9
+python-whois>=0.8
+dnspython>=2.4
+urllib3>=2.1
+tldextract>=5.1
+jproperties>=2.1
+click>=8.1
+colorama>=0.4
+tenacity>=8.2
+pytz>=2023.3

@@ -1,0 +1,146 @@
+[
+  {
+    "id": 1,
+    "title": "Design and scaffold the footprintscanner project structure",
+    "status": "done",
+    "priority": "high",
+    "created_at": "2026-07-27T03:57:56.329148+00:00",
+    "completed_at": "2026-07-27T04:07:37.250154+00:00",
+    "notes": ""
+  },
+  {
+    "id": 2,
+    "title": "Implement domain/IP reconnaissance module",
+    "status": "done",
+    "priority": "high",
+    "created_at": "2026-07-27T03:57:56.336507+00:00",
+    "completed_at": "2026-07-27T04:07:37.256274+00:00",
+    "notes": ""
+  },
+  {
+    "id": 3,
+    "title": "Implement email address footprint scanning",
+    "status": "done",
+    "priority": "high",
+    "created_at": "2026-07-27T03:57:56.347371+00:00",
+    "completed_at": "2026-07-27T04:07:37.262129+00:00",
+    "notes": ""
+  },
+  {
+    "id": 4,
+    "title": "Implement social media footprint scanning",
+    "status": "done",
+    "priority": "high",
+    "created_at": "2026-07-27T03:57:56.354903+00:00",
+    "completed_at": "2026-07-27T04:07:37.268324+00:00",
+    "notes": ""
+  },
+  {
+    "id": 5,
+    "title": "Implement DNS and security header analysis",
+    "status": "done",
+    "priority": "high",
+    "created_at": "2026-07-27T03:57:56.362998+00:00",
+    "completed_at": "2026-07-27T04:07:37.273819+00:00",
+    "notes": ""
+  },
+  {
+    "id": 6,
+    "title": "Implement breach data checking",
+    "status": "done",
+    "priority": "high",
+    "created_at": "2026-07-27T03:57:56.372403+00:00",
+    "completed_at": "2026-07-27T04:07:37.278926+00:00",
+    "notes": ""
+  },
+  {
+    "id": 7,
+    "title": "Implement risk scoring and severity classification",
+    "status": "done",
+    "priority": "high",
+    "created_at": "2026-07-27T03:57:56.379877+00:00",
+    "completed_at": "2026-07-27T04:07:37.284296+00:00",
+    "notes": ""
+  },
+  {
+    "id": 8,
+    "title": "Implement remediation recommendations engine",
+    "status": "done",
+    "priority": "high",
+    "created_at": "2026-07-27T03:57:56.390147+00:00",
+    "completed_at": "2026-07-27T04:07:37.289767+00:00",
+    "notes": ""
+  },
+  {
+    "id": 9,
+    "title": "Build PDF report generator with executive summary",
+    "status": "done",
+    "priority": "high",
+    "created_at": "2026-07-27T03:57:56.398529+00:00",
+    "completed_at": "2026-07-27T04:07:37.294658+00:00",
+    "notes": ""
+  },
+  {
+    "id": 10,
+    "title": "Build CLI interface with progress display",
+    "status": "done",
+    "priority": "high",
+    "created_at": "2026-07-27T03:57:56.406324+00:00",
+    "completed_at": "2026-07-27T04:07:37.302622+00:00",
+    "notes": ""
+  },
+  {
+    "id": 11,
+    "title": "Write tests and documentation",
+    "status": "done",
+    "priority": "medium",
+    "created_at": "2026-07-27T03:57:56.414038+00:00",
+    "completed_at": "2026-07-27T04:07:37.308161+00:00",
+    "notes": ""
+  },
+  {
+    "id": 12,
+    "title": "Audit Rat-Detecter.py \u2014 security, bugs, logic errors",
+    "status": "done",
+    "priority": "high",
+    "created_at": "2026-08-02T00:10:33.560714+00:00",
+    "completed_at": "2026-08-02T00:10:47.532012+00:00",
+    "notes": "Review all 702 lines for bugs, race conditions, security issues, dead code, API errors, false-positive risks"
+  },
+  {
+    "id": 13,
+    "title": "Install dependencies and set up venv",
+    "status": "done",
+    "priority": "high",
+    "created_at": "2026-08-02T00:10:36.613964+00:00",
+    "completed_at": "2026-08-02T00:13:32.252568+00:00",
+    "notes": "Installing Flask, flask-cors, reportlab, anthropic, psutil, requests, pytest in venv"
+  },
+  {
+    "id": 14,
+    "title": "Check dashboard.html and fix if missing",
+    "status": "done",
+    "priority": "medium",
+    "created_at": "2026-08-02T00:10:39.308106+00:00",
+    "completed_at": "2026-08-02T00:15:04.621631+00:00",
+    "notes": "Scan for dashboard.html and test that the Flask app actually serves it"
+  },
+  {
+    "id": 15,
+    "title": "Upgrade code \u2014 fix bugs, add missing features from cheatsheet, improve detection logic",
+    "status": "done",
+    "priority": "high",
+    "created_at": "2026-08-02T00:10:42.160125+00:00",
+    "completed_at": null,
+    "notes": "RAT signatures massively expanded (1454 total), file was corrupted and rebuilt from scratch. 8 scan modules working, PDF/HTML/JSON reports, Flask API. 38 findings on full scan. False positives from broad keywords in process scanning need cleanup."
+  },
+  {
+    "id": 16,
+    "title": "End-to-end testing \u2014 start scan, verify dashboard, check report",
+    "status": "done",
+    "priority": "high",
+    "created_at": "2026-08-02T00:10:44.954588+00:00",
+    "completed_at": null,
+    "notes": "Started Flask on port 5050, testing API endpoints with curl"
+  }
+]
