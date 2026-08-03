@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrinTech — Playbook Generator</title>
+<style>
+  :root {
+    --bg: #0a0e17;
+    --surface: #111827;
+    --border: #1e293b;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --accent: #3b82f6;
+    --green: #22c55e;
+    --red: #ef4444;
+    --yellow: #eab308;
+    --orange: #f97316;
+    --purple: #a855f7;
+    --critical: #ff0040;
+    --high: #ff4444;
+    --medium: #ffa500;
+    --low: #88ff88;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace; background: var(--bg); color: var(--text); min-height: 100vh; }
+  .header { background: linear-gradient(135deg, #1a1a2e, #16213e); padding: 20px 30px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .header h1 { font-size: 20px; color: var(--accent); }
+  .header .subtitle { font-size: 12px; color: var(--muted); }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; }
+  .badge-critical { background: rgba(255,0,64,0.2); color: var(--critical); border: 1px solid var(--critical); }
+  .badge-high { background: rgba(255,68,68,0.2); color: var(--high); border: 1px solid var(--high); }
+  .badge-medium { background: rgba(255,165,0,0.2); color: var(--medium); border: 1px solid var(--medium); }
+  .badge-low { background: rgba(136,255,136,0.2); color: var(--low); border: 1px solid var(--low); }
+  .badge-generated { background: rgba(168,85,247,0.2); color: var(--purple); border: 1px solid var(--purple); }
+  .badge-investigating { background: rgba(234,179,8,0.2); color: var(--yellow); border: 1px solid var(--yellow); }
+  .badge-contained { background: rgba(59,130,246,0.2); color: var(--accent); border: 1px solid var(--accent); }
+  .badge-resolved { background: rgba(34,197,94,0.2); color: var(--green); border: 1px solid var(--green); }
+  .badge-closed { background: rgba(148,163,184,0.2); color: var(--muted); border: 1px solid var(--muted); }
+  .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px; text-align: center; }
+  .stat-card .value { font-size: 24px; font-weight: bold; color: var(--accent); }
+  .stat-card .label { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .actions { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+  .btn { padding: 8px 16px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; font-family: inherit; font-size: 12px; transition: all 0.2s; }
+  .btn:hover { background: #1e293b; border-color: var(--accent); }
+  .btn-primary { background: var(--accent); color: white; border-color: var(--accent); }
+  .btn-primary:hover { background: #2563eb; }
+  .btn-sm { padding: 4px 10px; font-size: 11px; }
+  .btn-danger { background: rgba(239,68,68,0.2); color: var(--red); border-color: var(--red); }
+  .playbook-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+  .playbook-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px; cursor: pointer; transition: all 0.2s; }
+  .playbook-card:hover { border-color: var(--accent); background: #0f1729; }
+  .playbook-card.active { border-color: var(--accent); box-shadow: 0 0 20px rgba(59,130,246,0.1); }
+  .playbook-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .playbook-title { font-size: 14px; font-weight: bold; }
+  .playbook-meta { font-size: 11px; color: var(--muted); }
+  .playbook-tags { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+  .tag { padding: 2px 8px; border-radius: 3px; font-size: 10px; background: rgba(59,130,246,0.15); color: var(--accent); border: 1px solid rgba(59,130,246,0.3); }
+  .detail-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-top: 10px; }
+  .detail-section { margin-bottom: 18px; }
+  .detail-section h3 { font-size: 13px; color: var(--accent); margin-bottom: 6px; border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+  .detail-section ul { list-style: none; padding: 0; }
+  .detail-section li { padding: 3px 0 3px 20px; font-size: 12px; color: var(--muted); position: relative; }
+  .detail-section li::before { content: "▸"; position: absolute; left: 4px; color: var(--accent); }
+  .firewall-rule { background: #000; padding: 6px 10px; border-radius: 4px; font-size: 11px; color: var(--green); margin: 4px 0; font-family: 'Fira Code', monospace; }
+  .ioc-item { display: inline-block; padding: 2px 8px; margin: 2px; background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.3); border-radius: 3px; font-size: 11px; }
+  .timeline-item { padding: 8px 12px; margin: 4px 0; background: rgba(30,41,59,0.5); border-radius: 4px; border-left: 3px solid var(--accent); font-size: 12px; }
+  .timeline-item .time { color: var(--muted); font-size: 11px; }
+  .timeline-item .sev-CRITICAL { border-left-color: var(--critical); }
+  .timeline-item .sev-HIGH { border-left-color: var(--high); }
+  .timeline-item .sev-MEDIUM { border-left-color: var(--medium); }
+  .timeline-item .sev-LOW { border-left-color: var(--low); }
+  .timeline-item .sev-INFO { border-left-color: var(--muted); }
+  .empty-state { text-align: center; padding: 50px 20px; color: var(--muted); }
+  .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+  .status-dot.green { background: var(--green); }
+  .status-dot.yellow { background: var(--yellow); }
+  .playbook-text { background: #0a0a0a; border: 1px solid var(--border); border-radius: 6px; padding: 14px; font-size: 12px; line-height: 1.6; white-space: pre-wrap; max-height: 600px; overflow-y: auto; color: var(--muted); }
+  .filter-bar { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+  .filter-bar select, .filter-bar input { padding: 6px 10px; border-radius: 4px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-family: inherit; font-size: 12px; }
+  .note-entry { padding: 6px 10px; margin: 4px 0; background: rgba(168,85,247,0.1); border-radius: 4px; font-size: 12px; }
+  .note-entry .note-time { color: var(--muted); font-size: 10px; }
+  .tab-bar { display: flex; gap: 0; margin-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .tab { padding: 8px 16px; cursor: pointer; color: var(--muted); font-size: 12px; border-bottom: 2px solid transparent; transition: all 0.2s; }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .status-select { padding: 4px 8px; border-radius: 4px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-family: inherit; font-size: 11px; cursor: pointer; }
+  @media (max-width: 768px) { .stats { grid-template-columns: repeat(2, 1fr); } .actions { flex-direction: column; } }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>⚡ TrinTech Playbook Generator</h1>
+    <div class="subtitle">Automated Incident Response Playbooks</div>
+  </div>
+  <div id="healthStatus"><span class="status-dot yellow"></span>Connecting...</div>
+</div>
+
+<div class="container">
+  <div class="stats" id="stats">
+    <div class="stat-card"><div class="value" id="totalPlaybooks">0</div><div class="label">Total</div></div>
+    <div class="stat-card"><div class="value" id="criticalCount">0</div><div class="label">Critical</div></div>
+    <div class="stat-card"><div class="value" id="highCount">0</div><div class="label">High</div></div>
+    <div class="stat-card"><div class="value" id="mediumCount">0</div><div class="label">Medium</div></div>
+    <div class="stat-card"><div class="value" id="lowCount">0</div><div class="label">Low/Info</div></div>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" onclick="generatePlaybook()">⚡ Generate from Log Correlator</button>
+    <button class="btn" onclick="generateManual()">+ Manual Generate</button>
+    <button class="btn" onclick="exportReport()">📄 Export Report</button>
+    <button class="btn btn-danger" onclick="clearPlaybooks()">🗑 Clear All</button>
+  </div>
+
+  <div class="filter-bar">
+    <select id="severityFilter" onchange="filterPlaybooks()">
+      <option value="">All Severities</option>
+      <option value="CRITICAL">CRITICAL</option>
+      <option value="HIGH">HIGH</option>
+      <option value="MEDIUM">MEDIUM</option>
+      <option value="LOW">LOW</option>
+      <option value="INFO">INFO</option>
+    </select>
+    <select id="statusFilter" onchange="filterPlaybooks()">
+      <option value="">All Statuses</option>
+      <option value="GENERATED">GENERATED</option>
+      <option value="INVESTIGATING">INVESTIGATING</option>
+      <option value="CONTAINED">CONTAINED</option>
+      <option value="RESOLVED">RESOLVED</option>
+      <option value="CLOSED">CLOSED</option>
+    </select>
+    <input type="text" id="searchInput" placeholder="Search..." oninput="filterPlaybooks()" style="flex:1; min-width: 150px;">
+  </div>
+
+  <div class="playbook-list" id="playbookList">
+    <div class="empty-state">
+      <h2>No playbooks yet</h2>
+      <p>Click "Generate from Log Correlator" to auto-generate from incidents,<br>or "Manual Generate" to create a playbook from custom data.</p>
+    </div>
+  </div>
+
+  <div id="detailPanel"></div>
+</div>
+
+<script>
+const API = '';
+let currentPlaybooks = [];
+
+async function generatePlaybook() {
+  try {
+    const r = await fetch(API + '/api/playbook/from-logcorr', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({db_path:'/opt/baal-agent/workspace/TrinTech/Log-Correlator/trintech_reports/log_correlator.db'})});
+    const d = await r.json();
+    if (d.status === 'generated') {
+      alert(`Generated ${d.playbooks} playbooks!`);
+      refreshAll();
+    } else {
+      alert(d.message || 'No incidents found in Log Correlator');
+    }
+  } catch (e) { alert('Error: ' + e.message); }
+}
+
+async function generateManual() {
+  const title = prompt('Playbook title:', 'Manual Response Playbook');
+  if (!title) return;
+  const severity = prompt('Severity (CRITICAL/HIGH/MEDIUM/LOW/INFO):', 'HIGH') || 'HIGH';
+
+  try {
+    const r = await fetch(API + '/api/playbook/generate', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        incident_id: 'manual-' + Date.now(),
+        severity: severity,
+        tags: ['manual'],
+        events: [
+          {"event_id":"e1","source":"manual","raw_message":`Manual playbook generation for ${title}`,"timestamp":new Date().toISOString(),"severity":severity,"fields":{},"tags":["manual"]}
+        ],
+        title: title
+      })
+    });
+    const d = await r.json();
+    if (d.status === 'generated') { refreshAll(); }
+  } catch (e) { alert('Error: ' + e.message); }
+}
+
+async function refreshAll() {
+  try {
+    const r = await fetch(API + '/api/playbooks');
+    currentPlaybooks = await r.json();
+    filterPlaybooks();
+    refreshStats();
+  } catch (e) { console.error(e); }
+}
+
+function filterPlaybooks() {
+  const sevFilter = document.getElementById('severityFilter').value;
+  const statusFilter = document.getElementById('statusFilter').value;
+  const search = document.getElementById('searchInput').value.toLowerCase();
+
+  let filtered = currentPlaybooks.playbooks || [];
+  if (sevFilter) filtered = filtered.filter(p => p.severity === sevFilter);
+  if (statusFilter) filtered = filtered.filter(p => p.status === statusFilter);
+  if (search) filtered = filtered.filter(p =>
+    p.title?.toLowerCase().includes(search) ||
+    p.incident_id?.toLowerCase().includes(search) ||
+    p.playbook_id?.toLowerCase().includes(search)
+  );
+
+  const list = document.getElementById('playbookList');
+  if (filtered.length === 0) {
+    list.innerHTML = '<div class="empty-state"><h2>No playbooks found</h2></div>';
+    return;
+  }
+  list.innerHTML = filtered.map((pb, i) => `
+    <div class="playbook-card" onclick="showDetail('${pb.playbook_id}')" data-idx="${i}">
+      <div class="playbook-header">
+        <div class="playbook-title">${pb.title || 'Untitled'}</div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <span class="badge badge-${pb.severity?.toLowerCase() || 'medium'}">${pb.severity || 'N/A'}</span>
+          <span class="badge badge-${(pb.status || 'generated').toLowerCase()}">${pb.status || 'GENERATED'}</span>
+        </div>
+      </div>
+      <div class="playbook-meta">ID: ${pb.incident_id} | ${new Date(pb.generated_at).toLocaleString()}</div>
+      <div class="playbook-tags">
+        ${pb.mitre_mappings?.map(m => `<span class="tag">${m.technique?.split('—')[0] || m.technique || ''}</span>`).join('') || ''}
+        ${pb.containment_steps?.length ? `<span class="tag">🛡 ${pb.containment_steps.length}</span>` : ''}
+        ${pb.eradication_steps?.length ? `<span class="tag">🔥 ${pb.eradication_steps.length}</span>` : ''}
+        ${pb.recovery_steps?.length ? `<span class="tag">💚 ${pb.recovery_steps.length}</span>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function showDetail(pbId) {
+  const pb = (currentPlaybooks.playbooks || []).find(p => p.playbook_id === pbId);
+  if (!pb) return;
+
+  document.querySelectorAll('.playbook-card').forEach(c => {
+    c.classList.toggle('active', c.textContent.includes(pbId));
+  });
+
+  const panel = document.getElementById('detailPanel');
+  panel.innerHTML = `
+    <div class="detail-panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <h2 style="font-size:16px">${pb.title || 'Untitled'}</h2>
+        <div style="display:flex;gap:8px;align-items:center">
+          <select class="status-select" onchange="changeStatus('${pb.playbook_id}', this.value)">
+            ${['GENERATED','INVESTIGATING','CONTAINED','RESOLVED','CLOSED'].map(s =>
+              `<option value="${s}" ${pb.status===s?'selected':''}>${s}</option>`
+            ).join('')}
+          </select>
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <h3>📋 Overview</h3>
+        <div class="playbook-meta">
+          <strong>Severity:</strong> ${pb.severity} | <strong>Playbook:</strong> ${pb.playbook_id} | <strong>Incident:</strong> ${pb.incident_id} | <strong>Generated:</strong> ${new Date(pb.generated_at).toLocaleString()}
+        </div>
+      </div>
+
+      ${pb.escalation?.priority ? `
+      <div class="detail-section">
+        <h3>⚡ Escalation: ${pb.escalation.priority}</h3>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Response: ${pb.escalation.response_time} | Notify: ${pb.escalation.notify?.join(', ')}</div>
+        <ul>${pb.escalation.actions?.map(a => `<li>${a}</li>`).join('') || ''}</ul>
+      </div>` : ''}
+
+      <div class="tab-bar">
+        <div class="tab active" onclick="showTab(this, 'mitre-${pb.playbook_id}')">MITRE ATT&CK</div>
+        <div class="tab" onclick="showTab(this, 'timeline-${pb.playbook_id}')">Timeline</div>
+        <div class="tab" onclick="showTab(this, 'text-${pb.playbook_id}')">Full Text</div>
+        <div class="tab" onclick="showTab(this, 'notes-${pb.playbook_id}')">Notes & History</div>
+      </div>
+
+      <div id="mitre-${pb.playbook_id}" class="detail-section">
+        <h3>🎯 MITRE ATT&CK</h3>
+        ${pb.mitre_mappings?.map(m => `
+          <div style="margin:6px 0;padding:8px;background:rgba(59,130,246,0.1);border-radius:4px;border:1px solid rgba(59,130,246,0.2)">
+            <div style="font-size:12px;color:var(--accent)"><strong>${m.technique || ''}</strong> <span style="color:var(--muted)">[${m.tactic || ''}]</span></div>
+            <ul style="margin-top:4px">${m.steps?.map(s => `<li>${s}</li>`).join('') || ''}</ul>
+          </div>
+        `).join('') || '<div style="font-size:12px;color:var(--muted)">No mappings</div>'}
+      </div>
+
+      <div id="timeline-${pb.playbook_id}" class="detail-section" style="display:none">
+        <h3>📊 Event Timeline</h3>
+        ${pb.events?.map(e => `
+          <div class="timeline-item sev-${e.severity || 'INFO'}">
+            <div class="time">${e.timestamp || '?'} [${e.severity || 'INFO'}] ${e.source || 'unknown'}</div>
+            <div style="margin-top:2px">${e.raw_message || ''}</div>
+          </div>
+        `).join('') || '<div style="color:var(--muted);font-size:12px">No events</div>'}
+      </div>
+
+      <div id="text-${pb.playbook_id}" class="detail-section" style="display:none">
+        <h3>📄 Full Playbook Text</h3>
+        <div class="playbook-text">${escapeHtml(pb.playbook_text || '')}</div>
+      </div>
+
+      <div id="notes-${pb.playbook_id}" class="detail-section" style="display:none">
+        <h3>📝 Status History & Notes</h3>
+        ${pb.status_history?.map(sh => `
+          <div class="note-entry">
+            <div class="note-time">${sh.timestamp || ''}</div>
+            <div>Status: ${sh.previous_status || '—'} → <strong>${sh.status}</strong> | Reason: ${sh.reason || ''}</div>
+          </div>
+        `).join('') || ''}
+        ${pb.notes?.map(n => `
+          <div class="note-entry">
+            <div class="note-time">${n.time || ''} [${n.source || 'system'}]</div>
+            <div>${n.note || ''}</div>
+          </div>
+        `).join('') || ''}
+        <div style="margin-top:10px">
+          <input type="text" id="noteInput-${pb.playbook_id}" placeholder="Add note..." style="flex:1;padding:6px;border-radius:4px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:inherit;font-size:12px">
+          <button class="btn btn-sm" onclick="addNote('${pb.playbook_id}')">Add</button>
+        </div>
+      </div>
+
+      ${pb.iocs && (pb.iocs.ips?.length || pb.iocs.files?.length || pb.iocs.processes?.length || pb.iocs.users?.length) ? `
+      <div class="detail-section" style="margin-top:16px">
+        <h3>⚠ Indicators of Compromise</h3>
+        ${pb.iocs.ips?.length ? `<div style="margin-bottom:4px"><strong>IPs:</strong></div><div>${pb.iocs.ips.map(i => `<span class="ioc-item">${i}</span>`).join('')}</div>` : ''}
+        ${pb.iocs.files?.length ? `<div style="margin-top:8px;margin-bottom:4px"><strong>Files:</strong></div><div>${pb.iocs.files.map(i => `<span class="ioc-item">${i}</span>`).join('')}</div>` : ''}
+        ${pb.iocs.processes?.length ? `<div style="margin-top:8px;margin-bottom:4px"><strong>Processes:</strong></div><div>${pb.iocs.processes.map(i => `<span class="ioc-item">${i}</span>`).join('')}</div>` : ''}
+        ${pb.iocs.users?.length ? `<div style="margin-top:8px;margin-bottom:4px"><strong>Users:</strong></div><div>${pb.iocs.users.map(i => `<span class="ioc-item">${i}</span>`).join('')}</div>` : ''}
+      </div>` : ''}
+
+      ${pb.containment_steps?.length ? `
+      <div class="detail-section" style="margin-top:16px">
+        <h3>🛡 Containment (${pb.containment_steps.length})</h3>
+        <ul>${pb.containment_steps.map(s => `<li>Step ${s.order}: ${s.step}</li>`).join('')}</ul>
+      </div>` : ''}
+
+      ${pb.eradication_steps?.length ? `
+      <div class="detail-section" style="margin-top:16px">
+        <h3>🔥 Eradication (${pb.eradication_steps.length})</h3>
+        <ul>${pb.eradication_steps.map(s => `<li>Step ${s.order}: ${s.step}</li>`).join('')}</ul>
+      </div>` : ''}
+
+      ${pb.recovery_steps?.length ? `
+      <div class="detail-section" style="margin-top:16px">
+        <h3>💚 Recovery (${pb.recovery_steps.length})</h3>
+        <ul>${pb.recovery_steps.map(s => `<li>Step ${s.order}: ${s.step}</li>`).join('')}</ul>
+      </div>` : ''}
+
+      ${pb.affected_assets?.length ? `
+      <div class="detail-section" style="margin-top:16px">
+        <h3>🖥 Affected Assets</h3>
+        ${pb.affected_assets.map(a => `<div style="padding:4px 0;font-size:12px;color:var(--yellow)">⚠ ${a}</div>`).join('')}
+      </div>` : ''}
+
+      ${pb.iocs?.ips?.length ? `
+      <div class="detail-section" style="margin-top:16px">
+        <h3>📡 Auto-Generated Firewall Rules</h3>
+        ${pb.iocs.ips.map(ip => `<div class="firewall-rule">iptables -A INPUT -s ${ip} -j DROP<br>iptables -A OUTPUT -d ${ip} -j DROP</div>`).join('')}
+      </div>` : ''}
+
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <button class="btn" onclick="window.open('${API}/api/playbook/${pb.playbook_id}/text','_blank')">📋 Open as Text</button>
+        <button class="btn" onclick="exportSinglePdf('${pb.playbook_id}')">📄 Export PDF</button>
+      </div>
+    </div>
+  `;
+}
+
+function showTab(tabEl, tabId) {
+  tabEl.parentElement.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  tabEl.classList.add('active');
+  const panel = tabEl.closest('.detail-panel');
+  panel.querySelectorAll('.detail-section').forEach(s => {
+    if (s.id && s.id !== tabId) s.style.display = 'none';
+  });
+  const tab = document.getElementById(tabId);
+  if (tab) tab.style.display = 'block';
+}
+
+function changeStatus(playbookId, newStatus) {
+  fetch(API + `/api/playbook/${playbookId}/status`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ status: newStatus, reason: 'Updated via dashboard' })
+  }).then(() => refreshAll());
+}
+
+async function addNote(pbId) {
+  const input = document.getElementById(`noteInput-${pbId}`);
+  if (!input || !input.value.trim()) return;
+  await fetch(API + `/api/playbook/${pbId}/notes`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ note: input.value, source: 'dashboard' })
+  });
+  input.value = '';
+  refreshAll();
+  showDetail(pbId);
+}
+
+function exportSinglePdf(pbId) {
+  window.open(API + '/api/playbook/export/pdf', '_blank');
+}
+
+function refreshStats() {
+  const playbooks = currentPlaybooks.playbooks || [];
+  document.getElementById('totalPlaybooks').textContent = playbooks.length;
+  document.getElementById('criticalCount').textContent = playbooks.filter(p => p.severity === 'CRITICAL').length;
+  document.getElementById('highCount').textContent = playbooks.filter(p => p.severity === 'HIGH').length;
+  document.getElementById('mediumCount').textContent = playbooks.filter(p => p.severity === 'MEDIUM').length;
+  document.getElementById('lowCount').textContent = playbooks.filter(p => ['LOW','INFO'].includes(p.severity)).length;
+}
+
+function exportReport() {
+  window.open(API + '/api/playbook/report', '_blank');
+}
+
+function clearPlaybooks() {
+  if (!confirm('Clear all playbooks?')) return;
+  fetch(API + '/api/playbook/clear', {method:'POST'})
+    .then(() => { currentPlaybooks = {playbooks:[]}; filterPlaybooks(); refreshStats(); })
+    .catch(() => { currentPlaybooks = {playbooks:[]}; filterPlaybooks(); refreshStats(); });
+}
+
+function escapeHtml(text) {
+  return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/═/g, '<span style="color:var(--border)">═</span>')
+    .replace(/⚠/g, '<span style="color:var(--red)">⚠</span>')
+    .replace(/💚/g, '<span style="color:var(--green)">💚</span>')
+    .replace(/🛡/g, '<span style="color:var(--green)">🛡</span>')
+    .replace(/🔥/g, '<span style="color:var(--red)">🔥</span>')
+    .replace(/🖥/g, '<span style="color:var(--orange)">🖥</span>');
+}
+
+// Check health on load
+fetch(API + '/api/health')
+  .then(r => r.json())
+  .then(d => {
+    const status = document.getElementById('healthStatus');
+    status.innerHTML = `<span class="status-dot green"></span>${d.service || 'Playbook Generator'} (${d.playbooks} playbooks) v${d.version || ''}`;
+  })
+  .catch(() => {
+    document.getElementById('healthStatus').innerHTML = '<span class="status-dot yellow"></span>Disconnected';
+  });
+
+// Initial load
+refreshAll();
+setInterval(refreshAll, 30000);
+</script>
+</body>
+</html>

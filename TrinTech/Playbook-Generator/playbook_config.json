@@ -1,0 +1,48 @@
+{
+  "escalation_contacts": {
+    "CISO": {
+      "email": "ciso@example.com",
+      "phone": "+1-555-0100"
+    },
+    "SOC Lead": {
+      "email": "soc-lead@example.com",
+      "phone": "+1-555-0101"
+    },
+    "Incident Commander": {
+      "email": "ic@example.com",
+      "phone": "+1-555-0102"
+    },
+    "Legal": {
+      "email": "legal@example.com",
+      "phone": "+1-555-0103"
+    },
+    "SOC Analyst On-Call": {
+      "email": "soc-oncall@example.com",
+      "phone": "+1-555-0200"
+    },
+    "SOC Analyst": {
+      "email": "soc@example.com",
+      "phone": "+1-555-0201"
+    }
+  },
+  "default_email_domain": "test.com",
+  "firewall_prefix": "iptables",
+  "auto_block_all_ips": true,
+  "report_format": "text",
+  "pdf_defaults": {
+    "font_size": 10,
+    "font_name": "Helvetica",
+    "margin": 60,
+    "page_size": "A4"
+  },
+  "notification": {
+    "email_enabled": true,
+    "sms_enabled": false,
+    "slack_enabled": false,
+    "slack_webhook": ""
+  },
+  "dedup": {
+    "enabled": true,
+    "window_minutes": 30
+  }
+}

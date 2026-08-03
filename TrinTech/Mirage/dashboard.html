@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mirage — Deception Dashboard | TrinTech</title>
+<style>
+:root {
+  --bg: #0a0e17; --card: #111827; --border: #1f2937;
+  --text: #e5e7eb; --muted: #9ca3af; --accent: #3b82f6;
+  --green: #10b981; --red: #ef4444; --orange: #f59e0b; --purple: #8b5cf6;
+  --cyan: #06b6d4; --pink: #ec4899;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: var(--bg); color: var(--text); font-family: -apple-system, monospace; min-height: 100vh; }
+
+/* Header */
+.header { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-bottom: 1px solid var(--border); padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
+.header h1 { font-size: 20px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 8px; }
+.header h1::before { content: "🎭"; font-size: 24px; }
+.badge { background: var(--accent); color: white; padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 600; }
+.header-right { display: flex; gap: 12px; align-items: center; }
+
+/* Buttons */
+.btn { background: var(--accent); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.2s; }
+.btn:hover { opacity: 0.9; transform: translateY(-1px); }
+.btn-secondary { background: #374151; }
+.btn-danger { background: var(--red); }
+.btn-sm { padding: 4px 10px; font-size: 12px; }
+
+/* Layout */
+.container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+
+/* Stats Row */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+.stat-card .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+.stat-card .value { font-size: 28px; font-weight: 700; }
+.stat-card .value.red { color: var(--red); }
+.stat-card .value.green { color: var(--green); }
+.stat-card .value.orange { color: var(--orange); }
+.stat-card .value.purple { color: var(--purple); }
+.stat-card .value.cyan { color: var(--cyan); }
+.stat-card .sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+/* Severity Badges */
+.sev { padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 600; }
+.sev-critical { background: rgba(239,68,68,0.2); color: var(--red); }
+.sev-high { background: rgba(245,158,11,0.2); color: var(--orange); }
+.sev-medium { background: rgba(59,130,246,0.2); color: var(--accent); }
+.sev-low { background: rgba(16,185,129,0.2); color: var(--green); }
+
+/* Status Badges */
+.status { padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 600; }
+.status-new { background: rgba(236,72,153,0.2); color: var(--pink); }
+.status-investigating { background: rgba(245,158,11,0.2); color: var(--orange); }
+.status-confirmed { background: rgba(239,68,68,0.2); color: var(--red); }
+.status-false-positive { background: rgba(16,185,129,0.2); color: var(--green); }
+.status-resolved { background: rgba(107,114,128,0.2); color: var(--muted); }
+
+/* Two Column Layout */
+.two-col { display: grid; grid-template-columns: 1fr 380px; gap: 16px; }
+
+/* Alert List */
+.panel { background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.panel-header { padding: 14px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.panel-header h2 { font-size: 14px; font-weight: 600; }
+.alert-list { max-height: 600px; overflow-y: auto; }
+.alert-item { padding: 12px 16px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.15s; }
+.alert-item:hover { background: rgba(59,130,246,0.05); }
+.alert-item.active { background: rgba(59,130,246,0.1); border-left: 3px solid var(--accent); }
+.alert-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.alert-type { font-weight: 600; font-size: 13px; }
+.alert-meta { font-size: 11px; color: var(--muted); display: flex; gap: 12px; }
+.alert-detail { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.alert-notes { margin-top: 8px; font-size: 11px; color: var(--muted); }
+.alert-note { padding: 4px 8px; background: rgba(0,0,0,0.3); border-radius: 4px; margin-top: 2px; }
+
+/* Detail Panel */
+.detail-panel { padding: 16px; }
+.detail-title { font-size: 16px; font-weight: 600; margin-bottom: 12px; }
+.detail-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.detail-row .label { color: var(--muted); }
+
+/* Sidebar panels */
+.sidebar-panel { margin-bottom: 16px; }
+
+/* Timeline */
+.timeline { position: relative; padding-left: 20px; }
+.timeline::before { content: ''; position: absolute; left: 6px; top: 0; bottom: 0; width: 2px; background: var(--border); }
+.timeline-item { position: relative; padding: 8px 0 8px 16px; font-size: 12px; }
+.timeline-item::before { content: ''; position: absolute; left: -17px; top: 12px; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); border: 2px solid var(--bg); }
+.timeline-item .time { color: var(--muted); font-size: 11px; }
+.timeline-item .text { color: var(--text); margin-top: 2px; }
+
+/* Charts (simple bar) */
+.chart-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.chart-bar .bar-label { font-size: 12px; min-width: 100px; color: var(--muted); }
+.chart-bar .bar-track { flex: 1; height: 16px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; }
+.chart-bar .bar-fill { height: 100%; border-radius: 3px; transition: width 0.5s; }
+.chart-bar .bar-count { font-size: 12px; min-width: 24px; text-align: right; }
+
+/* Deploy Section */
+.deploy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 12px; }
+.deploy-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; padding: 12px; cursor: pointer; text-align: center; transition: all 0.2s; }
+.deploy-btn:hover { border-color: var(--accent); background: rgba(59,130,246,0.1); }
+.deploy-btn .icon { font-size: 24px; margin-bottom: 4px; }
+.deploy-btn .name { font-size: 12px; font-weight: 600; }
+.deploy-btn .desc { font-size: 10px; color: var(--muted); margin-top: 2px; }
+.deploy-btn.deployed { border-color: var(--green); background: rgba(16,185,129,0.05); }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* Responsive */
+@media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
+@media (max-width: 600px) { .stats-grid { grid-template-columns: 1fr 1fr; } }
+
+/* Flash notification */
+.flash { position: fixed; top: 20px; right: 20px; background: var(--card); border: 1px solid var(--green); border-radius: 8px; padding: 12px 20px; z-index: 1000; animation: flashIn 0.3s ease; font-size: 13px; }
+.flash.error { border-color: var(--red); }
+@keyframes flashIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Mirage <span class="badge">v1.0</span></h1>
+  <div class="header-right">
+    <button class="btn btn-secondary" onclick="loadStats()">⟳ Refresh</button>
+    <button class="btn" onclick="deployAll()">⚡ Deploy All</button>
+  </div>
+</div>
+
+<div class="container">
+  <!-- Stats -->
+  <div class="stats-grid" id="statsGrid">
+    <div class="stat-card"><div class="label">Total Alerts</div><div class="value red" id="totalAlerts">0</div></div>
+    <div class="stat-card"><div class="label">New Alerts</div><div class="value orange" id="newAlerts">0</div></div>
+    <div class="stat-card"><div class="label">Active Lures</div><div class="value green" id="activeLures">0</div></div>
+    <div class="stat-card"><div class="label">Unique IPs</div><div class="value cyan" id="uniqueIPs">0</div></div>
+    <div class="stat-card"><div class="label">Confirms</div><div class="value purple" id="confirmedAlerts">0</div></div>
+  </div>
+
+  <div class="two-col">
+    <!-- Left: Alerts -->
+    <div>
+      <div class="panel">
+        <div class="panel-header">
+          <h2>🚨 Alerts</h2>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-sm btn-secondary" onclick="filterAlerts('NEW')">New</button>
+            <button class="btn btn-sm btn-secondary" onclick="filterAlerts('CONFIRMED')">All</button>
+          </div>
+        </div>
+        <div class="alert-list" id="alertList">
+          <div style="padding:40px;text-align:center;color:var(--muted);">Loading alerts...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right sidebar -->
+    <div>
+      <!-- Deploy decoys -->
+      <div class="panel sidebar-panel">
+        <div class="panel-header"><h2>🪤 Deploy Lures</h2></div>
+        <div class="deploy-grid">
+          <div class="deploy-btn" onclick="createLure('ssh_key')">
+            <div class="icon">🔑</div><div class="name">SSH Key</div><div class="desc">Fake SSH private key</div>
+          </div>
+          <div class="deploy-btn" onclick="createLure('db_credential')">
+            <div class="icon">🗄️</div><div class="name">DB Creds</div><div class="desc">Fake DB credentials</div>
+          </div>
+          <div class="deploy-btn" onclick="createLure('cloud_credential')">
+            <div class="icon">☁️</div><div class="name">Cloud Creds</div><div class="desc">Fake AWS/GCP keys</div>
+          </div>
+          <div class="deploy-btn" onclick="createLure('fake_service')">
+            <div class="icon">🌐</div><div class="name">Fake Service</div><div class="desc">Honeypot web service</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Severity breakdown -->
+      <div class="panel sidebar-panel">
+        <div class="panel-header"><h2>📊 Severity</h2></div>
+        <div style="padding: 12px;" id="severityChart">
+          <div class="chart-bar"><span class="bar-label">CRITICAL</span><div class="bar-track"><div class="bar-fill" style="width:0%;background:var(--red);"></div></div><span class="bar-count">0</span></div>
+          <div class="chart-bar"><span class="bar-label">HIGH</span><div class="bar-track"><div class="bar-fill" style="width:0%;background:var(--orange);"></div></div><span class="bar-count">0</span></div>
+          <div class="chart-bar"><span class="bar-label">MEDIUM</span><div class="bar-track"><div class="bar-fill" style="width:0%;background:var(--accent);"></div></div><span class="bar-count">0</span></div>
+          <div class="chart-bar"><span class="bar-label">LOW</span><div class="bar-track"><div class="bar-fill" style="width:0%;background:var(--green);"></div></div><span class="bar-count">0</span></div>
+        </div>
+      </div>
+
+      <!-- Top actors -->
+      <div class="panel sidebar-panel">
+        <div class="panel-header"><h2>👤 Top Actors</h2></div>
+        <div style="padding: 12px;" id="actorList">
+          <div style="color:var(--muted);font-size:12px;">No actors yet</div>
+        </div>
+      </div>
+
+      <!-- Select an alert to view -->
+      <div class="panel sidebar-panel" id="detailPanel" style="display:none;">
+        <div class="panel-header"><h2>📋 Alert Detail</h2></div>
+        <div class="detail-panel" id="detailContent"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentFilter = 'NEW';
+let refreshInterval = null;
+
+// Auto-refresh every 3 seconds
+function startAutoRefresh() {
+  refreshInterval = setInterval(() => {
+    loadStats();
+    loadAlerts();
+  }, 3000);
+}
+
+async function loadStats() {
+  try {
+    const r = await fetch('/api/stats');
+    const d = await r.json();
+    
+    document.getElementById('totalAlerts').textContent = d.total || 0;
+    document.getElementById('newAlerts').textContent = d.by_status?.NEW || 0;
+    document.getElementById('activeLures').textContent = d.active_lures || 0;
+    document.getElementById('uniqueIPs').textContent = d.unique_ips || 0;
+    document.getElementById('confirmedAlerts').textContent = d.by_status?.CONFIRMED || 0;
+
+    // Severity chart
+    const max = Math.max(...Object.values(d.by_severity || {}), 1);
+    const bars = document.querySelectorAll('.chart-bar');
+    const sevMap = { CRITICAL: 0, HIGH: 1, MEDIUM: 2, LOW: 3 };
+    for (const [sev, idx] of Object.entries(sevMap)) {
+      if (bars[idx]) {
+        const count = d.by_severity?.[sev] || 0;
+        const pct = Math.max((count / max) * 100, count > 0 ? 15 : 0);
+        bars[idx].querySelector('.bar-fill').style.width = pct + '%';
+        bars[idx].querySelector('.bar-count').textContent = count;
+      }
+    }
+
+    // Top actors
+    const actorDiv = document.getElementById('actorList');
+    if (d.top_actors && d.top_actors.length > 0) {
+      actorDiv.innerHTML = d.top_actors.map(a => 
+        `<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:12px;border-bottom:1px solid var(--border);">
+          <span style="color:var(--text);font-family:monospace;">${a.ip}</span>
+          <span style="color:var(--muted);">${a.count} hits</span>
+        </div>`
+      ).join('');
+    }
+  } catch(e) { console.error('Stats error:', e); }
+}
+
+async function loadAlerts() {
+  try {
+    const r = await fetch(`/api/alerts?status=${currentFilter}&limit=50`);
+    const d = await r.json();
+    const list = document.getElementById('alertList');
+    
+    if (d.alerts.length === 0) {
+      list.innerHTML = '<div style="padding:40px;text-align:center;color:var(--muted);">No alerts found</div>';
+      return;
+    }
+
+    list.innerHTML = d.alerts.map(a => {
+      const sevClass = `sev-${a.severity?.toLowerCase()}`;
+      const statusClass = `status-${a.status?.toLowerCase()}`;
+      return `
+        <div class="alert-item" onclick="showDetail('${a.alert_id}')">
+          <div class="alert-top">
+            <span class="alert-type">${a.lure_type}</span>
+            <div style="display:flex;gap:4px;">
+              <span class="status ${statusClass}">${a.status}</span>
+              <span class="sev ${sevClass}">${a.severity}</span>
+            </div>
+          </div>
+          <div class="alert-detail">${a.lure_name} — ${a.actor_ip}</div>
+          <div class="alert-meta">
+            <span>${a.trigger_location}</span>
+            <span>${new Date(a.timestamp).toLocaleTimeString()}</span>
+          </div>
+          ${a.notes?.length ? `<div class="alert-notes">${a.notes[a.notes.length-1].note}</div>` : ''}
+        </div>
+      `;
+    }).join('');
+  } catch(e) { console.error('Alerts error:', e); }
+}
+
+async function showDetail(alertId) {
+  try {
+    const r = await fetch(`/api/alert/${alertId}`);
+    const a = await r.json();
+    document.getElementById('detailPanel').style.display = 'block';
+    
+    const content = `
+      <div class="detail-row"><span class="label">Alert ID</span><span style="font-family:monospace;font-size:11px;">${a.alert_id}</span></div>
+      <div class="detail-row"><span class="label">Type</span><span>${a.lure_type}</span></div>
+      <div class="detail-row"><span class="label">Name</span><span>${a.lure_name}</span></div>
+      <div class="detail-row"><span class="label">Location</span><span style="font-family:monospace;font-size:11px;">${a.trigger_location}</span></div>
+      <div class="detail-row"><span class="label">Actor IP</span><span style="font-family:monospace;color:var(--red);font-weight:600;">${a.actor_ip}</span></div>
+      <div class="detail-row"><span class="label">Severity</span><span class="sev sev-${a.severity?.toLowerCase()}">${a.severity}</span></div>
+      <div class="detail-row"><span class="label">Status</span><span class="status status-${a.status?.toLowerCase()}">${a.status}</span></div>
+      <div class="detail-row"><span class="label">Triggered</span><span>${new Date(a.timestamp).toLocaleString()}</span></div>
+      ${a.notes?.length ? `
+        <div style="margin-top:12px;">
+          <div style="font-size:12px;font-weight:600;margin-bottom:4px;">Timeline</div>
+          <div class="timeline">
+            ${a.notes.map(n => `
+              <div class="timeline-item">
+                <div class="time">${new Date(n.time).toLocaleString()}</div>
+                <div class="text">${n.note}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      ` : ''}
+      <div style="margin-top:12px;display:flex;gap:6px;">
+        <button class="btn btn-sm" onclick="updateStatus('${alertId}','CONFIRMED')">Confirm</button>
+        <button class="btn btn-sm btn-secondary" onclick="updateStatus('${alertId}','FALSE_POSITIVE')">False Positive</button>
+        <button class="btn btn-sm btn-secondary" onclick="updateStatus('${alertId}','RESOLVED')">Resolve</button>
+        <button class="btn btn-sm btn-danger" onclick="addNote('${alertId}')">Add Note</button>
+      </div>
+    `;
+    document.getElementById('detailContent').innerHTML = content;
+  } catch(e) { console.error('Detail error:', e); }
+}
+
+async function createLure(type) {
+  try {
+    const r = await fetch('/api/lure/create', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ type })
+    });
+    const d = await r.json();
+    flash(d.status === 'deployed' ? `✅ ${type} decoy deployed!` : `❌ ${d.error}`);
+    loadStats();
+  } catch(e) { flash('Deploy failed', true); }
+}
+
+async function deployAll() {
+  try {
+    const r = await fetch('/api/lure/deploy-all', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'}
+    });
+    const d = await r.json();
+    flash(`✅ Deployed ${d.results.filter(r => r.status === 'deployed').length} decoys!`);
+    loadStats();
+  } catch(e) { flash('Deploy failed', true); }
+}
+
+function filterAlerts(status) {
+  currentFilter = status;
+  loadAlerts();
+}
+
+async function updateStatus(alertId, status) {
+  try {
+    await fetch(`/api/alert/${alertId}`, {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ status })
+    });
+    flash(`✅ Alert ${status}`);
+    loadStats();
+    loadAlerts();
+  } catch(e) { flash('Update failed', true); }
+}
+
+async function addNote(alertId) {
+  const note = prompt('Add a note:');
+  if (note) {
+    try {
+      await fetch(`/api/alert/${alertId}`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ note })
+      });
+      flash('✅ Note added');
+      showDetail(alertId);
+    } catch(e) { flash('Failed', true); }
+  }
+}
+
+function flash(msg, isError = false) {
+  const el = document.createElement('div');
+  el.className = `flash ${isError ? 'error' : ''}`;
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
+// Init
+startAutoRefresh();
+loadStats();
+loadAlerts();
+</script>
+</body>
+</html>

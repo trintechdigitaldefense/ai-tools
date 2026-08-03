@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Log Correlator — TrinTech</title>
+<style>
+:root {
+  --bg: #0a0e17; --card: #111827; --border: #1f2937;
+  --text: #e5e7eb; --muted: #9ca3af; --accent: #3b82f6;
+  --green: #10b981; --red: #ef4444; --orange: #f59e0b; --purple: #8b5cf6;
+  --cyan: #06b6d4; --pink: #ec4899; --yellow: #eab308;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: var(--bg); color: var(--text); font-family: -apple-system, monospace; min-height: 100vh; }
+
+.header { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-bottom: 1px solid var(--border); padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
+.header h1 { font-size: 20px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 8px; }
+.header h1::before { content: "🔗"; font-size: 24px; }
+.badge { background: var(--accent); color: white; padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 600; }
+.header-right { display: flex; gap: 12px; align-items: center; }
+
+.btn { background: var(--accent); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.2s; }
+.btn:hover { opacity: 0.9; transform: translateY(-1px); }
+.btn-secondary { background: #374151; }
+.btn-danger { background: var(--red); }
+.btn-sm { padding: 4px 10px; font-size: 12px; }
+
+.container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+.stat-card .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+.stat-card .value { font-size: 28px; font-weight: 700; }
+.stat-card .value.red { color: var(--red); }
+.stat-card .value.green { color: var(--green); }
+.stat-card .value.orange { color: var(--orange); }
+.stat-card .value.purple { color: var(--purple); }
+.stat-card .value.cyan { color: var(--cyan); }
+.stat-card .value.yellow { color: var(--yellow); }
+
+.sev { padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 600; }
+.sev-critical { background: rgba(239,68,68,0.2); color: var(--red); }
+.sev-high { background: rgba(245,158,11,0.2); color: var(--orange); }
+.sev-medium { background: rgba(59,130,246,0.2); color: var(--accent); }
+.sev-low { background: rgba(16,185,129,0.2); color: var(--green); }
+
+.status { padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 600; }
+.status-new { background: rgba(236,72,153,0.2); color: var(--pink); }
+.status-confirmed { background: rgba(239,68,68,0.2); color: var(--red); }
+.status-resolved { background: rgba(107,114,128,0.2); color: var(--muted); }
+
+.two-col { display: grid; grid-template-columns: 1fr 380px; gap: 16px; }
+
+.panel { background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.panel-header { padding: 14px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.panel-header h2 { font-size: 14px; font-weight: 600; }
+
+.incident-list { max-height: 700px; overflow-y: auto; }
+.incident-item { padding: 12px 16px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.15s; }
+.incident-item:hover { background: rgba(59,130,246,0.05); }
+.incident-item.active { background: rgba(59,130,246,0.1); border-left: 3px solid var(--accent); }
+.incident-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.incident-id { font-weight: 600; font-size: 13px; font-family: monospace; }
+.incident-meta { font-size: 11px; color: var(--muted); display: flex; gap: 12px; }
+.incident-detail { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.incident-events { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+.source-tag { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 10px; font-weight: 600; margin: 0 2px; }
+.source-specter { background: rgba(139,92,246,0.2); color: var(--purple); }
+.source-mirage { background: rgba(16,185,129,0.2); color: var(--green); }
+.source-ticorr { background: rgba(236,72,153,0.2); color: var(--pink); }
+.source-system { background: rgba(6,182,212,0.2); color: var(--cyan); }
+.source-auth { background: rgba(234,179,8,0.2); color: var(--yellow); }
+.source-firewall { background: rgba(59,130,246,0.2); color: var(--accent); }
+.source-custom { background: rgba(156,163,175,0.2); color: var(--muted); }
+
+.detail-panel { padding: 16px; }
+.detail-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.detail-row .label { color: var(--muted); }
+.event-block { padding: 8px; background: rgba(0,0,0,0.2); border-radius: 6px; margin: 6px 0; font-size: 12px; }
+.event-block .raw { color: var(--muted); font-family: monospace; font-size: 11px; word-break: break-all; }
+
+.sidebar-panel { margin-bottom: 16px; }
+.sidebar-panel .chart-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.sidebar-panel .bar-label { font-size: 12px; min-width: 100px; color: var(--muted); }
+.sidebar-panel .bar-track { flex: 1; height: 16px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; }
+.sidebar-panel .bar-fill { height: 100%; border-radius: 3px; transition: width 0.5s; }
+.sidebar-panel .bar-count { font-size: 12px; min-width: 24px; text-align: right; }
+
+.top-ip { display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px; border-bottom: 1px solid var(--border); }
+
+#detailPanel { display: none; }
+
+.flash { position: fixed; top: 20px; right: 20px; background: var(--card); border: 1px solid var(--green); border-radius: 8px; padding: 12px 20px; z-index: 1000; animation: flashIn 0.3s ease; font-size: 13px; }
+.flash.error { border-color: var(--red); }
+@keyframes flashIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+@media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Log Correlator <span class="badge">TRINTECH</span></h1>
+  <div class="header-right">
+    <button class="btn btn-secondary" onclick="loadStats()">⟳ Refresh</button>
+    <button class="btn" onclick="doScan()">⚡ Full Scan</button>
+    <button class="btn btn-secondary" onclick="doCorrelate()">🔗 Correlate</button>
+  </div>
+</div>
+
+<div class="container">
+  <div class="stats-grid" id="statsGrid">
+    <div class="stat-card"><div class="label">Total Events</div><div class="value cyan" id="totalEvents">0</div></div>
+    <div class="stat-card"><div class="label">Incidents</div><div class="value red" id="totalIncidents">0</div></div>
+    <div class="stat-card"><div class="label">New</div><div class="value orange" id="newIncidents">0</div></div>
+    <div class="stat-card"><div class="label">Confirmed</div><div class="value red" id="confirmedIncidents">0</div></div>
+    <div class="stat-card"><div class="label">Links</div><div class="value purple" id="linkCount">0</div></div>
+    <div class="stat-card"><div class="label">Unique IPs</div><div class="value cyan" id="uniqueIPs">0</div></div>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <div class="panel">
+        <div class="panel-header">
+          <h2>🚨 Incidents</h2>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-sm btn-secondary" onclick="filterIncidents('NEW')">New</button>
+            <button class="btn btn-sm btn-secondary" onclick="filterIncidents('')">All</button>
+          </div>
+        </div>
+        <div class="incident-list" id="incidentList">
+          <div style="padding:40px;text-align:center;color:var(--muted);">Loading...</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel sidebar-panel">
+        <div class="panel-header"><h2>📊 Severity</h2></div>
+        <div style="padding:12px;" id="sevChart">
+          <div class="chart-bar"><span class="bar-label">CRITICAL</span><div class="bar-track"><div class="bar-fill" style="width:0%;background:var(--red);"></div></div><span class="bar-count">0</span></div>
+          <div class="chart-bar"><span class="bar-label">HIGH</span><div class="bar-track"><div class="bar-fill" style="width:0%;background:var(--orange);"></div></div><span class="bar-count">0</span></div>
+          <div class="chart-bar"><span class="bar-label">MEDIUM</span><div class="bar-track"><div class="bar-fill" style="width:0%;background:var(--accent);"></div></div><span class="bar-count">0</span></div>
+          <div class="chart-bar"><span class="bar-label">LOW</span><div class="bar-track"><div class="bar-fill" style="width:0%;background:var(--green);"></div></div><span class="bar-count">0</span></div>
+        </div>
+      </div>
+
+      <div class="panel sidebar-panel">
+        <div class="panel-header"><h2>📡 Sources</h2></div>
+        <div style="padding:12px;" id="sourceChart">
+          <div style="color:var(--muted);font-size:12px;">No sources yet</div>
+        </div>
+      </div>
+
+      <div class="panel sidebar-panel">
+        <div class="panel-header"><h2>👤 Top IPs</h2></div>
+        <div style="padding:12px;" id="ipList">
+          <div style="color:var(--muted);font-size:12px;">No IPs yet</div>
+        </div>
+      </div>
+
+      <div class="panel sidebar-panel" id="detailPanel">
+        <div class="panel-header"><h2>📋 Incident Detail</h2></div>
+        <div class="detail-panel" id="detailContent"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentFilter = 'NEW';
+let refreshInterval = null;
+
+function startAutoRefresh() { refreshInterval = setInterval(() => { loadStats(); loadIncidents(); }, 5000); }
+
+async function loadStats() {
+  try {
+    const r = await fetch('/api/stats');
+    const d = await r.json();
+    document.getElementById('totalEvents').textContent = d.total_events || 0;
+    document.getElementById('totalIncidents').textContent = d.total_incidents || 0;
+    document.getElementById('newIncidents').textContent = d.by_status?.NEW || 0;
+    document.getElementById('confirmedIncidents').textContent = d.by_status?.CONFIRMED || 0;
+    document.getElementById('linkCount').textContent = d.correlation_links || 0;
+    document.getElementById('uniqueIPs').textContent = d.unique_ips || 0;
+
+    const max = Math.max(...Object.values(d.by_severity || {}), 1);
+    const bars = document.querySelectorAll('#sevChart .chart-bar');
+    const map = { CRITICAL: 0, HIGH: 1, MEDIUM: 2, LOW: 3 };
+    for (const [sev, idx] of Object.entries(map)) {
+      if (bars[idx]) {
+        const count = d.by_severity?.[sev] || 0;
+        bars[idx].querySelector('.bar-fill').style.width = Math.max((count/max)*100, count > 0 ? 15 : 0) + '%';
+        bars[idx].querySelector('.bar-count').textContent = count;
+      }
+    }
+
+    const srcDiv = document.getElementById('sourceChart');
+    if (d.sources && Object.keys(d.sources).length > 0) {
+      srcDiv.innerHTML = Object.entries(d.sources).map(([s,c]) =>
+        `<div class="chart-bar"><span class="bar-label">${s}</span><div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--accent);"></div></div><span class="bar-count">${c}</span></div>`
+      ).join('');
+    }
+
+    const ipDiv = document.getElementById('ipList');
+    try {
+      const ir = await fetch('/api/incidents/unique-ips');
+      const ipd = await ir.json();
+      if (ipd.ips && ipd.ips.length > 0) {
+        ipDiv.innerHTML = ipd.ips.slice(0, 5).map(ip =>
+          `<div class="top-ip"><span style="font-family:monospace;color:var(--text);">${ip.ip}</span><span style="color:var(--muted);">${ip.count} hits</span></div>`
+        ).join('');
+      }
+    } catch(e) {}
+  } catch(e) { console.error('Stats error:', e); }
+}
+
+async function loadIncidents() {
+  try {
+    const r = await fetch(`/api/incidents?status=${currentFilter}&limit=50`);
+    const d = await r.json();
+    const list = document.getElementById('incidentList');
+
+    if (d.incidents.length === 0) {
+      list.innerHTML = '<div style="padding:40px;text-align:center;color:var(--muted);">No incidents found</div>';
+      return;
+    }
+
+    list.innerHTML = d.incidents.map(inc => {
+      const sevCls = `sev-${inc.severity?.toLowerCase()}`;
+      const statusCls = `status-${inc.status?.toLowerCase()}`;
+      const sources = new Set(inc.events?.map(e => e.source) || []);
+      const sourceBadges = Array.from(sources).map(s =>
+        `<span class="source-tag source-${s}">${s}</span>`
+      ).join('');
+
+      return `
+        <div class="incident-item" onclick="showDetail('${inc.incident_id}')">
+          <div class="incident-top">
+            <span class="incident-id">${inc.incident_id}</span>
+            <div style="display:flex;gap:4px;align-items:center;">
+              <span class="status ${statusCls}">${inc.status}</span>
+              <span class="sev ${sevCls}">${inc.severity}</span>
+            </div>
+          </div>
+          <div class="incident-events">${inc.event_count} events | ${sourceBadges}</div>
+          <div class="incident-detail">${inc.assigned_ip || 'No IP'}</div>
+        </div>
+      `;
+    }).join('');
+  } catch(e) { console.error('Incidents error:', e); }
+}
+
+async function showDetail(id) {
+  try {
+    const r = await fetch(`/api/incident/${id}`);
+    const inc = await r.json();
+    document.getElementById('detailPanel').style.display = 'block';
+
+    const sources = new Set(inc.events?.map(e => e.source) || []);
+    const sourceBadges = Array.from(sources).map(s =>
+      `<span class="source-tag source-${s}">${s}</span>`
+    ).join('');
+
+    let html = `
+      <div class="detail-row"><span class="label">ID</span><span style="font-family:monospace;font-size:11px;">${inc.incident_id}</span></div>
+      <div class="detail-row"><span class="label">Severity</span><span class="sev sev-${inc.severity?.toLowerCase()}">${inc.severity}</span></div>
+      <div class="detail-row"><span class="label">Status</span><span class="status status-${inc.status?.toLowerCase()}">${inc.status}</span></div>
+      <div class="detail-row"><span class="label">Events</span><span>${inc.event_count}</span></div>
+      <div class="detail-row"><span class="label">Sources</span><span>${sourceBadges}</span></div>
+      <div class="detail-row"><span class="label">IP</span><span style="font-family:monospace;color:var(--red);font-weight:600;">${inc.assigned_ip || '—'}</span></div>
+      ${inc.links?.length ? `<div style="margin-top:8px;font-size:11px;color:var(--muted);">${inc.links.length} correlation links</div>` : ''}
+      <div style="margin-top:12px;">
+        <button class="btn btn-sm" onclick="updateStatus('${inc.incident_id}','CONFIRMED')">Confirm</button>
+        <button class="btn btn-sm btn-secondary" onclick="updateStatus('${inc.incident_id}','RESOLVED')">Resolve</button>
+        <button class="btn btn-sm btn-secondary" onclick="regenNarrative('${inc.incident_id}')">Regen Narrative</button>
+        <button class="btn btn-sm btn-secondary" onclick="assignIpPrompt('${inc.incident_id}')">Assign IP</button>
+      </div>
+    `;
+
+    if (inc.narrative) {
+      html += `<div style="margin-top:12px;"><div style="font-size:12px;font-weight:600;margin-bottom:4px;">Narrative</div><pre style="white-space:pre-wrap;font-size:12px;color:var(--muted);background:rgba(0,0,0,0.3);padding:10px;border-radius:6px;">${inc.narrative}</pre></div>`;
+    }
+
+    if (inc.events?.length > 0) {
+      html += `<div style="margin-top:12px;"><div style="font-size:12px;font-weight:600;margin-bottom:4px;">Events (${inc.events.length})</div>`;
+      inc.events.forEach((e, i) => {
+        html += `<div class="event-block">
+          <div style="display:flex;justify-content:space-between;margin-bottom:2px;">
+            <span class="source-tag source-${e.source}">${e.source}</span>
+            <span style="font-size:11px;color:var(--muted);">${e.timestamp?.substring(0,19)}</span>
+          </div>
+          <div class="raw">${e.raw_message?.substring(0,300)}${e.raw_message?.length > 300 ? '...' : ''}</div>
+        </div>`;
+      });
+      html += '</div>';
+    }
+
+    document.getElementById('detailContent').innerHTML = html;
+  } catch(e) { console.error('Detail error:', e); }
+}
+
+async function doScan() {
+  try {
+    const r = await fetch('/api/ingest/full-scan', { method: 'POST', headers: {'Content-Type': 'application/json'} });
+    const d = await r.json();
+    flash(`✅ Scan complete: ${d.events_ingested} events, ${d.incidents_created || 0} incidents`);
+    loadStats(); loadIncidents();
+  } catch(e) { flash('Scan failed', true); }
+}
+
+async function doCorrelate() {
+  try {
+    const r = await fetch('/api/correlate', { method: 'POST' });
+    const d = await r.json();
+    flash(`✅ Correlation: ${d.incidents_created} incidents created`);
+    loadStats(); loadIncidents();
+  } catch(e) { flash('Correlation failed', true); }
+}
+
+function filterIncidents(status) {
+  currentFilter = status;
+  loadIncidents();
+}
+
+async function updateStatus(id, status) {
+  try {
+    await fetch(`/api/incident/${id}/status`, {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ status }),
+    });
+    flash(`✅ ${status}`);
+    loadStats(); loadIncidents();
+  } catch(e) { flash('Update failed', true); }
+}
+
+async function regenNarrative(id) {
+  try {
+    const r = await fetch(`/api/incident/${id}/narrative`, { method: 'POST' });
+    const d = await r.json();
+    showDetail(id);
+  } catch(e) { flash('Failed', true); }
+}
+
+async function assignIpPrompt(id) {
+  const ip = prompt('Enter IP address:');
+  if (ip) {
+    try {
+      await fetch(`/api/incidents/${id}/assign-ip`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ ip }),
+      });
+      flash(`✅ Assigned ${ip}`);
+      showDetail(id);
+    } catch(e) { flash('Failed', true); }
+  }
+}
+
+function flash(msg, err) {
+  const el = document.createElement('div');
+  el.className = `flash ${err ? 'error' : ''}`;
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
+startAutoRefresh();
+loadStats();
+loadIncidents();
+</script>
+</body>
+</html>

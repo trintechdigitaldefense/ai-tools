@@ -142,5 +142,68 @@
     "created_at": "2026-08-02T00:10:44.954588+00:00",
     "completed_at": null,
     "notes": "Started Flask on port 5050, testing API endpoints with curl"
+  },
+  {
+    "id": 17,
+    "title": "Build Threat Intelligence Correlator (tool #3)",
+    "status": "pending",
+    "priority": "high",
+    "created_at": "2026-08-02T08:38:44.664981+00:00",
+    "completed_at": null,
+    "notes": "Pull from AlienVault OTX, AbuseIPDB, VirusTotal, CISA KEV. Check SPECTER findings against real-time threat feeds. SQLite persistence. Boost confidence scores."
+  },
+  {
+    "id": 18,
+    "title": "Build Deception Dashboard (tool #4) \u2014 completes Mirage",
+    "status": "pending",
+    "priority": "high",
+    "created_at": "2026-08-02T08:38:46.423803+00:00",
+    "completed_at": null,
+    "notes": "Central dashboard for Mirage deception alerts. Aggregates decoy hits, honeypot touches, fake credential breaches. Correlates with SPECTER findings. Visual attack timeline."
+  },
+  {
+    "id": 19,
+    "title": "Build Incident Response Playbook Generator (tool #2)",
+    "status": "pending",
+    "priority": "high",
+    "created_at": "2026-08-02T08:38:48.018577+00:00",
+    "completed_at": null,
+    "notes": "Takes SPECTER findings \u2192 MITRE ATT&CK mapping \u2192 step-by-step containment/playbook \u2192 PDF/HTML report."
+  },
+  {
+    "id": 20,
+    "title": "Build Supply Chain Auditor (tool #1)",
+    "status": "pending",
+    "priority": "high",
+    "created_at": "2026-08-02T08:38:49.658178+00:00",
+    "completed_at": null,
+    "notes": "Scans requirements.txt, package.json, go.mod for malicious/pornware dependencies, typosquatting, supply chain attacks. PDF reports like FootprintScanner."
+  },
+  {
+    "id": 21,
+    "title": "Build Log Correlator \u2014 Unified Incident Timeline",
+    "status": "done",
+    "priority": "high",
+    "created_at": "2026-08-03T03:17:00+00:00",
+    "completed_at": "2026-08-03T03:20:00+00:00",
+    "notes": "Ingests logs from all sources (auth, syslog, firewall, SPECTER, Mirage, TI-Corr). Correlates events by IP/user/hostname/process/file. Generates incident narratives. 64/64 tests passing. 645 lines core + 279 server."
+  },
+  {
+    "id": 22,
+    "title": "Build Playbook Generator \u2014 Automated Incident Response",
+    "status": "done",
+    "priority": "high",
+    "created_at": "2026-08-03T23:00:00+00:00",
+    "completed_at": "2026-08-03T23:08:00+00:00",
+    "notes": "MITRE-ATT&CK mapped response playbooks with containment/eradication/recovery. 46/46 tests passing. 469 lines core + 274 server + 270 dashboard + 526 tests."
+  },
+  {
+    "id": 23,
+    "title": "Implement all 12 Playbook Generator improvements",
+    "status": "pending",
+    "priority": "high",
+    "created_at": "2026-08-03T23:10:54.193625+00:00",
+    "completed_at": null,
+    "notes": "PDF export, MITRE mappings, status lifecycle, dedup/merge, SPECTER integration, notification templates, timeline view, config file, rate limiting, SQLite persistence, bulk CLI, dashboard UX"
   }
 ]
