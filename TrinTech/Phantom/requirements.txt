@@ -1,0 +1,7 @@
+# Phantom — Network Traffic Analyzer & Protocol Auditor
+flask>=3.0
+scapy>=2.5.0
+pyshark>=0.6
+requests>=2.31
+pydantic>=2.0
+jinja2>=3.1

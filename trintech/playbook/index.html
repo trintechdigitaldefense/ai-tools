@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Playbook Generator — TrinTech Digital Defense</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f; --bg-card: #12121a; --border: #2a2a3a; --text: #e0e0e8; --text-dim: #8888a0;
+    --accent: #4ade80; --green: #4ade80; --blue: #60a5fa; --purple: #a78bfa; --yellow: #fbbf24;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); }
+  .back { display: inline-block; color: var(--text-dim); text-decoration: none; font-size: 0.85rem; margin: 24px 20px 0; }
+  .back:hover { color: var(--accent); }
+  .header { padding: 24px 20px 32px; text-align: center; }
+  .header h1 { font-size: 1.8rem; font-weight: 700; }
+  .header h1 span { color: var(--accent); }
+  .header p { color: var(--text-dim); font-size: 0.95rem; margin-top: 4px; }
+  .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; margin-top: 10px; }
+  .badge.green { background: rgba(74,222,128,0.15); color: var(--green); }
+  .metrics { display: flex; flex-wrap: wrap; gap: 12px; padding: 0 20px 20px; justify-content: center; }
+  .metric { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 24px; text-align: center; min-width: 140px; }
+  .metric .val { font-size: 1.5rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+  .metric .lbl { font-size: 0.68rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+  .section { max-width: 700px; margin: 24px auto; padding: 0 20px; }
+  .section h2 { font-size: 1.15rem; font-weight: 600; margin-bottom: 12px; }
+  .phases { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  @media(max-width:600px){.phases{grid-template-columns:1fr;}}
+  .phase { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 16px; border-left: 3px solid var(--accent); }
+  .phase h3 { font-size: 0.9rem; font-weight: 600; margin-bottom: 4px; }
+  .phase p { font-size: 0.78rem; color: var(--text-dim); line-height: 1.4; }
+  .features { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  .feat { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 8px 14px; font-size: 0.78rem; font-family: 'JetBrains Mono', monospace; }
+  .footer { text-align: center; padding: 30px 20px; color: var(--text-dim); font-size: 0.8rem; }
+  .footer a { color: var(--accent); text-decoration: none; }
+</style>
+</head>
+<body>
+<a class="back" href="/">← Back to TrinTech Portfolio</a>
+
+<div class="header">
+  <h1>📋 <span>Playbook Generator</span></h1>
+  <p>Automated MITRE-ATT&CK-mapped incident response playbooks</p>
+  <span class="badge green">● Complete</span>
+</div>
+
+<div class="metrics">
+  <div class="metric"><div class="val" style="color:var(--accent)">84/84</div><div class="lbl">Tests Passing</div></div>
+  <div class="metric"><div class="val" style="color:var(--blue)">~1.3k</div><div class="lbl">Lines of Code</div></div>
+  <div class="metric"><div class="val" style="color:var(--green)">Flask</div><div class="lbl">Backend API</div></div>
+  <div class="metric"><div class="val" style="color:var(--yellow)">MITRE</div><div class="lbl">ATT&amp;CK Mapped</div></div>
+</div>
+
+<div class="section">
+  <h2>📖 Incident Response Phases</h2>
+  <div class="phases">
+    <div class="phase"><h3>🔒 Containment</h3><p>Network isolation, credential rotation, access revocation, and traffic blocking rules.</p></div>
+    <div class="phase"><h3>🧹 Eradication</h3><p>Payload removal, malware cleanup, persistence mechanism elimination, and attacker tool deletion.</p></div>
+    <div class="phase"><h3>🔄 Recovery</h3><p>System restoration, validation testing, monitoring enhancement, and lessons-learned documentation.</p></div>
+  </div>
+</div>
+
+<div class="section">
+  <h2>⚙️ Features</h2>
+  <div class="features">
+    <span class="feat">CRUD API</span>
+    <span class="feat">PDF Export</span>
+    <span class="feat">Timeline Tracking</span>
+    <span class="feat">Deduplication</span>
+    <span class="feat">Auto Notifications</span>
+    <span class="feat">MITRE ATT&amp;CK</span>
+    <span class="feat">Priority Scoring</span>
+    <span class="feat">Status Workflows</span>
+  </div>
+</div>
+
+<div class="footer">
+  Part of <a href="https://github.com/trintechdigitaldefense/ai-tools" target="_blank">ai-tools</a> repo · <a href="/">Back to Portfolio</a>
+</div>
+</body>
+</html>

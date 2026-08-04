@@ -205,5 +205,140 @@
     "created_at": "2026-08-03T23:10:54.193625+00:00",
     "completed_at": null,
     "notes": "PDF export, MITRE mappings, status lifecycle, dedup/merge, SPECTER integration, notification templates, timeline view, config file, rate limiting, SQLite persistence, bulk CLI, dashboard UX"
+  },
+  {
+    "id": 24,
+    "title": "Set up Phantom project structure with venv and requirements",
+    "status": "done",
+    "priority": "high",
+    "created_at": "2026-08-04T09:46:05.993276+00:00",
+    "completed_at": "2026-08-04T09:49:50.693343+00:00",
+    "notes": ""
+  },
+  {
+    "id": 25,
+    "title": "Build Phantom core engine \u2014 packet capture, protocol classification, anomaly detection",
+    "status": "done",
+    "priority": "high",
+    "created_at": "2026-08-04T09:46:07.696873+00:00",
+    "completed_at": "2026-08-04T09:49:52.321806+00:00",
+    "notes": ""
+  },
+  {
+    "id": 26,
+    "title": "Build Phantom Flask API server with dashboard",
+    "status": "done",
+    "priority": "high",
+    "created_at": "2026-08-04T09:46:09.222240+00:00",
+    "completed_at": "2026-08-04T09:49:54.019175+00:00",
+    "notes": ""
+  },
+  {
+    "id": 27,
+    "title": "Write comprehensive tests for Phantom",
+    "status": "pending",
+    "priority": "high",
+    "created_at": "2026-08-04T09:46:10.781535+00:00",
+    "completed_at": null,
+    "notes": ""
+  },
+  {
+    "id": 28,
+    "title": "Create portfolio page on GitHub and deploy Flask service on port 5055",
+    "status": "pending",
+    "priority": "high",
+    "created_at": "2026-08-04T09:46:12.465013+00:00",
+    "completed_at": null,
+    "notes": ""
+  },
+  {
+    "id": 29,
+    "title": "Test and integrate Phantom into Log Correlator as new ingestion source",
+    "status": "pending",
+    "priority": "high",
+    "created_at": "2026-08-04T09:46:14.101523+00:00",
+    "completed_at": null,
+    "notes": ""
+  },
+  {
+    "id": 30,
+    "title": "Write tests for Phantom engine (packet parsing, classification, anomaly detection)",
+    "status": "done",
+    "priority": "high",
+    "created_at": "2026-08-04T09:49:56.268960+00:00",
+    "completed_at": "2026-08-04T09:59:42.373563+00:00",
+    "notes": ""
+  },
+  {
+    "id": 31,
+    "title": "Add MITRE ATT&CK mapping engine with 15+ technique/tactic mappings",
+    "status": "done",
+    "priority": "high",
+    "created_at": "2026-08-04T10:04:05.944058+00:00",
+    "completed_at": "2026-08-04T10:14:09.001132+00:00",
+    "notes": "Map each alert type to MITRE ATT&CK technique (e.g., suspicious_port\u2192T1571, beaconing\u2192T1071, dns_tunnel\u2192T1071.004, scanning\u2192T1046, exfil\u2192T1048, covert_channel\u2192T1095, port_hopping\u2192T1571)"
+  },
+  {
+    "id": 32,
+    "title": "Add multi-format reports: PDF + CSV export",
+    "status": "done",
+    "priority": "high",
+    "created_at": "2026-08-04T10:04:08.186209+00:00",
+    "completed_at": "2026-08-04T10:14:10.768463+00:00",
+    "notes": "Add PDF report generation using reportlab. Currently only HTML. Also add CSV export for events and alerts."
+  },
+  {
+    "id": 33,
+    "title": "Add IP reputation scoring and session tracking",
+    "status": "done",
+    "priority": "high",
+    "created_at": "2026-08-04T10:04:10.264390+00:00",
+    "completed_at": "2026-08-04T10:14:12.448950+00:00",
+    "notes": "Track time windows and detect correlated events within windows. Add session tracking for connection sessions. Add IP reputation scoring based on port usage patterns and protocol anomalies."
+  },
+  {
+    "id": 34,
+    "title": "Add alert deduplication engine",
+    "status": "done",
+    "priority": "medium",
+    "created_at": "2026-08-04T10:04:12.251817+00:00",
+    "completed_at": "2026-08-04T10:14:14.178792+00:00",
+    "notes": "Add alert deduplication with configurable time windows. Group same-type alerts from same IP within time window into single alert."
+  },
+  {
+    "id": 35,
+    "title": "Add cross-tool auto-ingest and PCAP upload endpoint",
+    "status": "pending",
+    "priority": "medium",
+    "created_at": "2026-08-04T10:04:14.398891+00:00",
+    "completed_at": null,
+    "notes": "Add auto-ingest from Log Correlator events and Mirage lures. Accept PCAP file upload directly in browser. Add WebSocket or SSE for real-time capture display."
+  },
+  {
+    "id": 36,
+    "title": "Upgrade dashboard with interactive charts and timeline",
+    "status": "done",
+    "priority": "medium",
+    "created_at": "2026-08-04T10:04:16.518845+00:00",
+    "completed_at": "2026-08-04T10:20:22.123942+00:00",
+    "notes": "Replace basic table dashboard with Chart.js visualization: protocol pie chart, alerts bar chart, traffic timeline, top talkers bar chart. Add auto-refresh and filtering controls."
+  },
+  {
+    "id": 37,
+    "title": "Add baseline anomaly scoring over time",
+    "status": "done",
+    "priority": "medium",
+    "created_at": "2026-08-04T10:04:18.664398+00:00",
+    "completed_at": "2026-08-04T10:20:23.963263+00:00",
+    "notes": "Add baseline scoring using z-scores over time windows. Flag deviations from normal traffic patterns (e.g., normal port distribution, typical volume, common protocols)."
+  },
+  {
+    "id": 38,
+    "title": "Expand test suite to 150+ tests",
+    "status": "done",
+    "priority": "high",
+    "created_at": "2026-08-04T10:04:21.497813+00:00",
+    "completed_at": "2026-08-04T10:20:25.508883+00:00",
+    "notes": "Write tests for all new features. Aim for 150+ tests covering MITRE mappings, PDF reports, CSV export, IP reputation, dedup, cross-tool ingest, and chart data endpoints."
   }
 ]

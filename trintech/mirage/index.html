@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mirage — TrinTech Digital Defense</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f; --bg-card: #12121a; --border: #2a2a3a; --text: #e0e0e8; --text-dim: #8888a0;
+    --accent: #a78bfa; --green: #4ade80; --blue: #60a5fa; --yellow: #fbbf24;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); }
+  .back { display: inline-block; color: var(--text-dim); text-decoration: none; font-size: 0.85rem; margin: 24px 20px 0; }
+  .back:hover { color: var(--accent); }
+  .header { padding: 24px 20px 32px; text-align: center; }
+  .header h1 { font-size: 1.8rem; font-weight: 700; }
+  .header h1 span { color: var(--accent); }
+  .header p { color: var(--text-dim); font-size: 0.95rem; margin-top: 4px; }
+  .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; margin-top: 10px; }
+  .badge.green { background: rgba(74,222,128,0.15); color: var(--green); }
+  .metrics { display: flex; flex-wrap: wrap; gap: 12px; padding: 0 20px 20px; justify-content: center; }
+  .metric { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 24px; text-align: center; min-width: 140px; }
+  .metric .val { font-size: 1.5rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+  .metric .lbl { font-size: 0.68rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+  .section { max-width: 700px; margin: 24px auto; padding: 0 20px; }
+  .section h2 { font-size: 1.15rem; font-weight: 600; margin-bottom: 12px; }
+  .capab { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+  .cap { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+  .cap h3 { font-size: 0.88rem; font-weight: 600; margin-bottom: 4px; }
+  .cap p { font-size: 0.78rem; color: var(--text-dim); line-height: 1.4; }
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.68rem; font-family: 'JetBrains Mono', monospace; margin-top: 6px; background: rgba(167,139,250,0.1); color: var(--accent); }
+  .footer { text-align: center; padding: 30px 20px; color: var(--text-dim); font-size: 0.8rem; }
+  .footer a { color: var(--accent); text-decoration: none; }
+</style>
+</head>
+<body>
+<a class="back" href="/">← Back to TrinTech Portfolio</a>
+
+<div class="header">
+  <h1>🪤 <span>Mirage</span></h1>
+  <p>Lightweight network deception framework — deploy honeypots and detect lateral movement</p>
+  <span class="badge green">● Complete</span>
+</div>
+
+<div class="metrics">
+  <div class="metric"><div class="val" style="color:var(--accent)">41/41</div><div class="lbl">Tests Passing</div></div>
+  <div class="metric"><div class="val" style="color:var(--blue)">~1.3k</div><div class="lbl">Lines of Code</div></div>
+  <div class="metric"><div class="val" style="color:var(--green)">0</div><div class="lbl">Dependencies</div></div>
+  <div class="metric"><div class="val" style="color:var(--yellow)">Rapid</div><div class="lbl">Deploy</div></div>
+</div>
+
+<div class="section">
+  <h2>⚙️ Capabilities</h2>
+  <div class="capab">
+    <div class="cap"><h3>🎯 Decoy Asset Deployment</h3><p>Simulate real servers, databases, and services across the network to attract and observe attackers.</p><span class="tag">Zero Dependencies</span></div>
+    <div class="cap"><h3>🕸️ Lateral Movement Detection</h3><p>Track attacker movement between decoy nodes in real time. Alerts on suspicious inter-node traffic.</p><span class="tag">Real-time Alerts</span></div>
+    <div class="cap"><h3>🪤 Modular Lure System</h3><p>Configurable bait files, fake credentials, and decoy URLs that trigger when accessed by attackers.</p><span class="tag">Configurable</span></div>
+  </div>
+</div>
+
+<div class="footer">
+  Part of <a href="https://github.com/trintechdigitaldefense/Mirage" target="_blank">GitHub</a> · <a href="/">Back to Portfolio</a>
+</div>
+</body>
+</html>

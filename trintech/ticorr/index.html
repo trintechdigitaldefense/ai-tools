@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TI-Corr — TrinTech Digital Defense</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f; --bg-card: #12121a; --border: #2a2a3a; --text: #e0e0e8; --text-dim: #8888a0;
+    --accent: #60a5fa; --green: #4ade80; --yellow: #fbbf24; --purple: #a78bfa; --red: #f87171;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); }
+  .back { display: inline-block; color: var(--text-dim); text-decoration: none; font-size: 0.85rem; margin: 24px 20px 0; }
+  .back:hover { color: var(--accent); }
+  .header { padding: 24px 20px 32px; text-align: center; }
+  .header h1 { font-size: 1.8rem; font-weight: 700; }
+  .header h1 span { color: var(--accent); }
+  .header p { color: var(--text-dim); font-size: 0.95rem; margin-top: 4px; }
+  .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; margin-top: 10px; }
+  .badge.green { background: rgba(74,222,128,0.15); color: var(--green); }
+  .metrics { display: flex; flex-wrap: wrap; gap: 12px; padding: 0 20px 20px; justify-content: center; }
+  .metric { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 24px; text-align: center; min-width: 140px; }
+  .metric .val { font-size: 1.5rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+  .metric .lbl { font-size: 0.68rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+  .section { max-width: 700px; margin: 24px auto; padding: 0 20px; }
+  .section h2 { font-size: 1.15rem; font-weight: 600; margin-bottom: 12px; }
+  .feeds { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+  .feed { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+  .feed h3 { font-size: 0.88rem; font-weight: 600; margin-bottom: 4px; }
+  .feed p { font-size: 0.78rem; color: var(--text-dim); line-height: 1.4; }
+  .correlation { background: var(--bg-card); border: 1px solid var(--accent); border-radius: 10px; padding: 20px; margin-top: 16px; text-align: center; }
+  .correlation .flow { font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; line-height: 1.8; color: var(--text-dim); }
+  .correlation .hl { font-weight: 700; }
+  .footer { text-align: center; padding: 30px 20px; color: var(--text-dim); font-size: 0.8rem; }
+  .footer a { color: var(--accent); text-decoration: none; }
+</style>
+</head>
+<body>
+<a class="back" href="/">← Back to TrinTech Portfolio</a>
+
+<div class="header">
+  <h1>🧠 <span>TI-Corr</span></h1>
+  <p>Threat intelligence correlator — enrich events with external feeds and IOC matching</p>
+  <span class="badge green">● Complete</span>
+</div>
+
+<div class="metrics">
+  <div class="metric"><div class="val" style="color:var(--accent)">34/34</div><div class="lbl">Tests Passing</div></div>
+  <div class="metric"><div class="val" style="color:var(--blue)">~1.5k</div><div class="lbl">Lines of Code</div></div>
+  <div class="metric"><div class="val" style="color:var(--green)">Feeds</div><div class="lbl">Intelligence</div></div>
+  <div class="metric"><div class="val" style="color:var(--purple)">IOC</div><div class="lbl">Enrichment</div></div>
+</div>
+
+<div class="section">
+  <h2>📡 Intelligence Feeds</h2>
+  <div class="feeds">
+    <div class="feed"><h3>🌐 IP Reputation</h3><p>Malicious IP databases, geo-IP correlation, and ASN threat scoring.</p></div>
+    <div class="feed"><h3>🔑 Hash Matching</h3><p>File hash lookups against known malware repositories and threat intel platforms.</p></div>
+    <div class="feed"><h3>🌍 Domain Intelligence</h3><p>DGA detection, newly registered domain alerts, and phishing URL databases.</p></div>
+    <div class="feed"><h3>⚠️ IOC Cross-Reference</h3><p>Multi-source IOC correlation across all connected TrinTech tools.</p></div>
+  </div>
+</div>
+
+<div class="section">
+  <h2>🔄 Correlation Flow</h2>
+  <div class="correlation">
+    <div class="flow">
+      <span class="hl" style="color:var(--red)">Raw Event</span> → <span class="hl" style="color:var(--blue)">IOCs Extracted</span> → <span class="hl" style="color:var(--green)">Feed Lookup</span> → <span class="hl" style="color:var(--yellow)">Threat Score</span> → <span class="hl" style="color:var(--purple)">Actor Profile</span>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  Part of <a href="https://github.com/trintechdigitaldefense/ai-tools" target="_blank">ai-tools</a> repo · <a href="/">Back to Portfolio</a>
+</div>
+</body>
+</html>

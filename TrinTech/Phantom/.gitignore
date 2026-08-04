@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+*.pyc
+phantom/captures/*.pcap
+phantom/exports/*
+.env
+trintech_reports/
