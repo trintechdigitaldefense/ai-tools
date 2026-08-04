@@ -58,11 +58,16 @@ ai-tools/
 
 ## 📊 Current Tool Inventory
 
-| Tool | Language | Lines | Status | Tests |
-|------|----------|-------|--------|-------|
-| Rat-Detecter | Python | ~2,300 | ✅ Operational | 24/24 integration |
-| FootprintScanner | Python | ~800 | ✅ Operational | 33/33 unit |
-| AI Skills | Python/Markdown | ~500 | ✅ Deployed | N/A |
+| Tool | Type | Tests | Lines | Status |
+|------|------|-------|-------|--------|
+| **SPECTER / Rat-Detecter** | RAT & malware detection | Operational | ~2,300 | ✅ 8 modules, 1,454+ signatures |
+| **FootprintScanner** | Digital footprint scanner | 33/33 | ~2,000 | ✅ PDF reports |
+| **TI-Corr** | Threat intelligence correlator | 34/34 | ~1,500 | ✅ IOC enrichment |
+| **Mirage** | Deception framework | 41/41 | ~1,300 | ✅ Honeypots & lures |
+| **Log Correlator** | Unified incident timeline | 64/64 | ~1,700 | ✅ Multi-tool correlation |
+| **Playbook Generator** | MITRE-ATT&CK response playbooks | 84/84 | ~1,300 | ✅ CRUD API, PDF export |
+
+**Total: 6 tools · 266 tests · ~8,200 lines · 100% pass rate**
 
 ## 📜 License
 
