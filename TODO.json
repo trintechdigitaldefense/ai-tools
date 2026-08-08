@@ -340,5 +340,14 @@
     "created_at": "2026-08-04T10:04:21.497813+00:00",
     "completed_at": "2026-08-04T10:20:25.508883+00:00",
     "notes": "Write tests for all new features. Aim for 150+ tests covering MITRE mappings, PDF reports, CSV export, IP reputation, dedup, cross-tool ingest, and chart data endpoints."
+  },
+  {
+    "id": 39,
+    "title": "Build Watchtower \u2014 Live Alert Bridge",
+    "status": "done",
+    "priority": "high",
+    "created_at": "2026-08-08T23:22:18.268731+00:00",
+    "completed_at": "2026-08-08T23:26:27.140295+00:00",
+    "notes": "Phases: 1. Core routing engine, 2. Cross-reference correlation, 3. Dashboard UI, 4. Tests, 5. Deploy to website"
   }
 ]

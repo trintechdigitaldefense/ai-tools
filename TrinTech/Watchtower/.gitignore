@@ -1,0 +1,8 @@
+# Virtual env
+.venv/
+
+# DB files
+*.db
+
+# Reports
+trintech_reports/
