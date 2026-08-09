@@ -1198,7 +1198,83 @@ def _generate_report(mode="full"):
         return str(html_path)
 
 
-def run_scan(api_key="", mode="full", verbose=False):
+def findings_to_watchtower_alerts(findings: list[dict]) -> list[dict]:
+    """Convert SPECTER findings into Watchtower alert format.
+
+    Watchtower expects:
+      [{
+        "alert_type": str,
+        "severity": "CRITICAL|HIGH|MEDIUM|LOW",
+        "title": str,
+        "detail": str,
+        "src_ip": str (optional),
+        "dst_ip": str (optional),
+        "hostname": str (optional),
+        ...
+      }]
+    """
+    alerts = []
+    for f in findings:
+        alert = {
+            "alert_type": f.get("type", "UNKNOWN"),
+            "severity": f.get("severity", "MEDIUM").upper(),
+            "title": f.get("type", ""),
+            "detail": f.get("detail", ""),
+            "timestamp": f.get("ts", ""),
+        }
+        # Copy extra structured fields (pid, port, service, etc.)
+        skip_keys = {"type", "severity", "detail", "ts"}
+        for key, val in f.items():
+            if key not in skip_keys:
+                alert[key] = val
+
+        # Check if detail contains an IP
+        finding_detail = f.get("detail", "")
+        ip_match = re.search(r"\b(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\b", finding_detail)
+        if ip_match:
+            alert["src_ip"] = ip_match.group(1)
+
+        alerts.append(alert)
+    return alerts
+
+
+def push_to_watchtower(findings: list[dict], watchtower_url: str = None) -> dict:
+    """Push findings to Watchtower and return the response (non-blocking, fire-and-forget)."""
+    if watchtower_url is None:
+        watchtower_url = os.environ.get("WATCHTOWER_URL", "http://localhost:5056")
+
+    if not findings:
+        return {"status": "skipped", "reason": "no findings"}
+
+    alerts = findings_to_watchtower_alerts(findings)
+    url = f"{watchtower_url}/webhook/specter"
+
+    try:
+        resp = requests.post(
+            url,
+            json={"alerts": alerts},
+            headers={"Content-Type": "application/json"},
+            timeout=5,
+        )
+        if resp.status_code == 200:
+            data = resp.json()
+            _log(f"[Watchtower] Pushed {data.get('ingested', 0)}/{len(alerts)} alerts")
+            return {"status": "ok", "pushed": data.get("ingested", 0), "total": len(alerts)}
+        else:
+            _log(f"[Watchtower] Push failed: {resp.status_code} {resp.text[:200]}")
+            return {"status": "error", "code": resp.status_code, "response": resp.text[:200]}
+    except requests.ConnectionError:
+        _log("[Watchtower] Could not reach Watchtower at " + url)
+        return {"status": "unreachable"}
+    except requests.Timeout:
+        _log("[Watchtower] Timeout connecting to Watchtower")
+        return {"status": "timeout"}
+    except Exception as e:
+        _log(f"[Watchtower] Push error: {e}")
+        return {"status": "error", "message": str(e)}
+
+
+def run_scan(api_key="", mode="full", verbose=False, push_watchtower=True, watchtower_url=None):
     """Main scan orchestrator - runs all modules in sequence."""
     with scan_lock:
         scan_state["running"] = True
@@ -1319,6 +1395,10 @@ Risk Score: {scan_state["risk_score"]}/100 ({scan_state["risk_label"]})"""
         finally:
             with scan_lock:
                 scan_state["ai_running"] = False
+
+    # Push findings to Watchtower (fire-and-forget, non-blocking)
+    if push_watchtower:
+        push_to_watchtower(findings, watchtower_url=watchtower_url)
 
     # Final state
     _set_progress(100, "Complete")
@@ -1533,6 +1613,8 @@ Examples:
     parser.add_argument("--whitelist", type=str, help="Whitelist file (one IP/port/pattern per line)")
     parser.add_argument("--verbose", action="store_true", help="Verbose output")
     parser.add_argument("--api-key", type=str, help="Anthropic API key for AI analysis")
+    parser.add_argument("--no-watchtower", action="store_true", help="Disable auto-push to Watchtower")
+    parser.add_argument("--watchtower-url", type=str, help="Watchtower URL (default: http://localhost:5056)")
 
     return parser.parse_args()
 
@@ -1576,13 +1658,17 @@ def run_cli(args):
         print(f"Watch mode started — checking every {args.interval}s (Ctrl+C to stop)")
         try:
             while True:
-                run_scan(api_key=args.api_key or "", mode=mode, verbose=args.verbose)
+                run_scan(api_key=args.api_key or "", mode=mode, verbose=args.verbose,
+                          push_watchtower=not args.no_watchtower,
+                          watchtower_url=args.watchtower_url)
                 print(f"\n→ Scan complete — Risk: {scan_state['risk_label']} ({scan_state['risk_score']})")
                 time.sleep(args.interval)
         except KeyboardInterrupt:
             print("\nWatch mode stopped.")
     else:
-        run_scan(api_key=args.api_key or "", mode=mode, verbose=args.verbose)
+        run_scan(api_key=args.api_key or "", mode=mode, verbose=args.verbose,
+                 push_watchtower=not args.no_watchtower,
+                 watchtower_url=args.watchtower_url)
 
         # Export report
         if args.report:
@@ -1595,11 +1681,10 @@ def run_cli(args):
                 path = generate_html_report(state_copy)
                 print(f"\n✓ HTML report: {path}")
 
-        # Also save PDF
+        # Also save PDF (already generated by _generate_report, just report path)
         with scan_lock:
             state_snapshot = {k: v for k, v in scan_state.items()}
-        pdf_path = generate_pdf(state_snapshot)
-        print(f"✓ PDF report: {pdf_path}")
+        print(f"✓ PDF report: {scan_state.get('report_path', 'N/A')}")
 
         print(f"\n{'='*60}")
         print(f"  Risk Score: {scan_state['risk_score']}/100")
