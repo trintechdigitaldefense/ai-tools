@@ -146,37 +146,37 @@
   {
     "id": 17,
     "title": "Build Threat Intelligence Correlator (tool #3)",
-    "status": "pending",
+    "status": "done",
     "priority": "high",
     "created_at": "2026-08-02T08:38:44.664981+00:00",
-    "completed_at": null,
+    "completed_at": "2026-08-09T01:30:00+00:00",
     "notes": "Pull from AlienVault OTX, AbuseIPDB, VirusTotal, CISA KEV. Check SPECTER findings against real-time threat feeds. SQLite persistence. Boost confidence scores."
   },
   {
     "id": 18,
     "title": "Build Deception Dashboard (tool #4) \u2014 completes Mirage",
-    "status": "pending",
+    "status": "done",
     "priority": "high",
     "created_at": "2026-08-02T08:38:46.423803+00:00",
-    "completed_at": null,
+    "completed_at": "2026-08-09T01:30:00+00:00",
     "notes": "Central dashboard for Mirage deception alerts. Aggregates decoy hits, honeypot touches, fake credential breaches. Correlates with SPECTER findings. Visual attack timeline."
   },
   {
     "id": 19,
     "title": "Build Incident Response Playbook Generator (tool #2)",
-    "status": "pending",
+    "status": "done",
     "priority": "high",
     "created_at": "2026-08-02T08:38:48.018577+00:00",
-    "completed_at": null,
+    "completed_at": "2026-08-09T01:30:00+00:00",
     "notes": "Takes SPECTER findings \u2192 MITRE ATT&CK mapping \u2192 step-by-step containment/playbook \u2192 PDF/HTML report."
   },
   {
     "id": 20,
     "title": "Build Supply Chain Auditor (tool #1)",
-    "status": "pending",
+    "status": "done",
     "priority": "high",
     "created_at": "2026-08-02T08:38:49.658178+00:00",
-    "completed_at": null,
+    "completed_at": "2026-08-09T01:30:00+00:00",
     "notes": "Scans requirements.txt, package.json, go.mod for malicious/pornware dependencies, typosquatting, supply chain attacks. PDF reports like FootprintScanner."
   },
   {
@@ -200,10 +200,10 @@
   {
     "id": 23,
     "title": "Implement all 12 Playbook Generator improvements",
-    "status": "pending",
+    "status": "done",
     "priority": "high",
     "created_at": "2026-08-03T23:10:54.193625+00:00",
-    "completed_at": null,
+    "completed_at": "2026-08-09T01:30:00+00:00",
     "notes": "PDF export, MITRE mappings, status lifecycle, dedup/merge, SPECTER integration, notification templates, timeline view, config file, rate limiting, SQLite persistence, bulk CLI, dashboard UX"
   },
   {
@@ -236,28 +236,28 @@
   {
     "id": 27,
     "title": "Write comprehensive tests for Phantom",
-    "status": "pending",
+    "status": "done",
     "priority": "high",
     "created_at": "2026-08-04T09:46:10.781535+00:00",
-    "completed_at": null,
+    "completed_at": "2026-08-09T01:30:00+00:00",
     "notes": ""
   },
   {
     "id": 28,
     "title": "Create portfolio page on GitHub and deploy Flask service on port 5055",
-    "status": "pending",
+    "status": "done",
     "priority": "high",
     "created_at": "2026-08-04T09:46:12.465013+00:00",
-    "completed_at": null,
+    "completed_at": "2026-08-09T01:30:00+00:00",
     "notes": ""
   },
   {
     "id": 29,
     "title": "Test and integrate Phantom into Log Correlator as new ingestion source",
-    "status": "pending",
+    "status": "done",
     "priority": "high",
     "created_at": "2026-08-04T09:46:14.101523+00:00",
-    "completed_at": null,
+    "completed_at": "2026-08-09T01:30:00+00:00",
     "notes": ""
   },
   {
@@ -349,5 +349,50 @@
     "created_at": "2026-08-08T23:22:18.268731+00:00",
     "completed_at": "2026-08-08T23:26:27.140295+00:00",
     "notes": "Phases: 1. Core routing engine, 2. Cross-reference correlation, 3. Dashboard UI, 4. Tests, 5. Deploy to website"
+  },
+  {
+    "id": 40,
+    "title": "Add SPECTER \u2192 Watchtower auto-ingest to Rat-Detecter.py",
+    "status": "done",
+    "priority": "high",
+    "created_at": "2026-08-09T01:17:20.721372+00:00",
+    "completed_at": "2026-08-09T01:20:39.703918+00:00",
+    "notes": "After scan completes, push findings to localhost:5056/webhook/specter"
+  },
+  {
+    "id": 41,
+    "title": "Write integration tests for SPECTER\u2192Watchtower push",
+    "status": "done",
+    "priority": "high",
+    "created_at": "2026-08-09T01:17:22.512221+00:00",
+    "completed_at": "2026-08-09T01:20:41.127180+00:00",
+    "notes": "Test mapping, error handling, network failure"
+  },
+  {
+    "id": 42,
+    "title": "Run all tests, fix failures, commit & push",
+    "status": "done",
+    "priority": "high",
+    "created_at": "2026-08-09T01:17:24.265352+00:00",
+    "completed_at": "2026-08-09T01:30:00+00:00",
+    "notes": "Ensure existing tests still pass + new ones"
+  },
+  {
+    "id": 43,
+    "title": "Commit and push SPECTER\u2192Watchtower integration",
+    "status": "done",
+    "priority": "high",
+    "created_at": "2026-08-09T01:20:42.524249+00:00",
+    "completed_at": "2026-08-09T01:20:50.519794+00:00",
+    "notes": ""
+  },
+  {
+    "id": 44,
+    "title": "Run all tool tests \u2014 fix any failures, commit & push",
+    "status": "pending",
+    "priority": "high",
+    "created_at": "2026-08-09T01:27:40.308995+00:00",
+    "completed_at": null,
+    "notes": "SPECTER Watchtower integration may have broken something \u2014 verify all tools still pass"
   }
 ]
