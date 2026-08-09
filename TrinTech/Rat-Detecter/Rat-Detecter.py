@@ -1238,6 +1238,31 @@ def findings_to_watchtower_alerts(findings: list[dict]) -> list[dict]:
     return alerts
 
 
+def copy_report_to_downloads(report_path: str) -> str:
+    """Copy the latest report to ~/Downloads/ for easy user access.
+    
+    Returns the destination path or empty string on failure.
+    """
+    if not report_path or not Path(report_path).exists():
+        return ""
+    
+    downloads_dir = Path.home() / "Downloads"
+    downloads_dir.mkdir(exist_ok=True)
+    
+    filename = Path(report_path).name
+    # Add timestamp to avoid overwriting previous reports
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    stem = Path(report_path).stem
+    suffix = Path(report_path).suffix
+    dest_name = f"{stem}_{timestamp}{suffix}"
+    dest = downloads_dir / dest_name
+    
+    import shutil
+    shutil.copy2(report_path, dest)
+    _log(f"Report copied to ~/Downloads/{dest_name}")
+    return str(dest)
+
+
 def push_to_watchtower(findings: list[dict], watchtower_url: str = None) -> dict:
     """Push findings to Watchtower and return the response (non-blocking, fire-and-forget)."""
     if watchtower_url is None:
@@ -1274,7 +1299,7 @@ def push_to_watchtower(findings: list[dict], watchtower_url: str = None) -> dict
         return {"status": "error", "message": str(e)}
 
 
-def run_scan(api_key="", mode="full", verbose=False, push_watchtower=True, watchtower_url=None):
+def run_scan(api_key="", mode="full", verbose=False, push_watchtower=True, watchtower_url=None, send_report=False):
     """Main scan orchestrator - runs all modules in sequence."""
     with scan_lock:
         scan_state["running"] = True
@@ -1407,6 +1432,13 @@ Risk Score: {scan_state["risk_score"]}/100 ({scan_state["risk_label"]})"""
         scan_state["finished"] = datetime.now().isoformat()
 
     _log(f"=== Scan Complete (Score: {scan_state['risk_score']}, Label: {scan_state['risk_label']}) ===")
+
+    # Copy report to ~/Downloads if requested
+    if send_report:
+        report_path = scan_state.get("report_path", "")
+        dest = copy_report_to_downloads(report_path)
+        if dest:
+            _log(f"Report available at: {dest}")
 
 
 def generate_html_report(state):
@@ -1615,6 +1647,7 @@ Examples:
     parser.add_argument("--api-key", type=str, help="Anthropic API key for AI analysis")
     parser.add_argument("--no-watchtower", action="store_true", help="Disable auto-push to Watchtower")
     parser.add_argument("--watchtower-url", type=str, help="Watchtower URL (default: http://localhost:5056)")
+    parser.add_argument("--send-report", action="store_true", help="Copy report to ~/Downloads/ for easy access")
 
     return parser.parse_args()
 
@@ -1660,7 +1693,8 @@ def run_cli(args):
             while True:
                 run_scan(api_key=args.api_key or "", mode=mode, verbose=args.verbose,
                           push_watchtower=not args.no_watchtower,
-                          watchtower_url=args.watchtower_url)
+                          watchtower_url=args.watchtower_url,
+                          send_report=args.send_report)
                 print(f"\n→ Scan complete — Risk: {scan_state['risk_label']} ({scan_state['risk_score']})")
                 time.sleep(args.interval)
         except KeyboardInterrupt:
@@ -1668,7 +1702,8 @@ def run_cli(args):
     else:
         run_scan(api_key=args.api_key or "", mode=mode, verbose=args.verbose,
                  push_watchtower=not args.no_watchtower,
-                 watchtower_url=args.watchtower_url)
+                 watchtower_url=args.watchtower_url,
+                 send_report=args.send_report)
 
         # Export report
         if args.report:

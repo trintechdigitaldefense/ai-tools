@@ -604,12 +604,22 @@ function startScan() {
 
 // Download PDF
 function downloadPDF() {
-  window.open(`${API}/api/report`, '_blank');
+  const a = document.createElement('a');
+  a.href = `${API}/api/report`;
+  a.download = '';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
 }
 
 // Download JSON
 function downloadJSON() {
-  window.open(`${API}/api/report/json`, '_blank');
+  const a = document.createElement('a');
+  a.href = `${API}/api/report/json`;
+  a.download = 'SPECTER_JSON_report.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
 }
 
 // Kill PID
